@@ -1,0 +1,110 @@
+.clase1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+    width: 100vw;      
+    background: 
+        linear-gradient(rgba(254, 255, 255, 0.685)),  
+        url(./fondooo.png) no-repeat center center; 
+    background-size: cover; 
+}
+
+.fondo{ /*quitar todo esto*/
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.clase1 form{
+    margin: 100px auto 50px auto;
+    padding: 30px;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.671); 
+    border-radius: 30px;
+    background: 
+        linear-gradient(rgba(0, 56, 129, 0.603), rgba(31, 132, 255, 0.63));
+    background-size: cover;
+    position: relative;
+    width: 80%;
+    max-width: 420px;
+}
+.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.clase1 .imagen{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+}
+.clase1 .login-registro{
+    display: contents;
+    justify-content: center;
+    align-items: center;
+}
+.login-registro h3{
+    color: white;
+    background: rgba(0, 0, 0, 0.3); 
+    width: 40%;
+    height: 20px;
+    border-radius: 15px;
+    padding: 6px 8px;     
+    margin: 10px auto;       
+    text-align: center;      
+    margin-bottom: 3px;   
+    font-size: 15px;
+    font-weight: normal;
+}
+.login-registro input{
+    height: 20px;
+    width: 70%;
+    background: rgb(215, 237, 255);
+    border-radius: 20px;
+    border: none;
+    margin: 5px 55px;
+    padding: 10px;
+}
+.login-registro input::placeholder{
+    color: rgb(177, 175, 175);
+}
+.clase1 .recuperarcontraseña{
+    text-align: center;
+}
+.recuperarcontraseña a{
+    color: rgb(32, 32, 32);
+    text-decoration: none;
+    font-size: 15px;
+}
+.recuperarcontraseña a:hover{
+    color: rgb(8, 0, 128);
+}
+.recuperarcontraseña a:active{
+    color: rgb(71, 59, 184);
+}
+.clase1 .boton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.boton button{
+    background: rgb(36, 36, 36);
+    color: aliceblue;
+    border-radius: 10px;
+    width: 70px;
+    height: 30px;
+    border: none;
+    margin: 20px;
+    cursor: pointer;
+}
+.boton button:hover{
+    background:  rgb(104, 104, 104);
+    color: black;
+}
+.boton button:active{
+    background: aliceblue;
+    color: black;
+}

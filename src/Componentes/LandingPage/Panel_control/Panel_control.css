@@ -1,0 +1,94 @@
+.panel {
+    width: 100%;
+    height: 100vh;
+    background:
+      linear-gradient(rgba(254, 255, 255, 0.685)), 
+      url(./fondo.png) no-repeat center center; 
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .regresar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border-radius: 100%;
+  }
+  .log0 {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+  }
+  .titu1o{
+    text-align: center;
+    margin-left: 300px;
+    margin-top: 100px;
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+  }
+  .titu1o .linealarga{
+    color: black;
+  }
+  .titu1o h1{
+    background:
+      linear-gradient(rgba(0, 66, 247, 0.192)), 
+      url(./fondo.png); 
+    height: 60px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    border-radius: 30px;
+  }
+  .titu1o h3{
+    padding: 0;
+    margin: 0;
+  }
+  .underline {
+    width: 90%;
+    height: 3px;
+    background-color: white;
+    margin: 10px auto 0;
+  }
+  .cards {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 80px;
+  }
+  .cards button{
+    text-decoration: none;
+  }
+  .card {
+    background-color: rgba(255, 255, 255, 0.404);
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    text-align: center;
+    width: 150px;
+    transition: transform 0.2s ease;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.671);
+  }
+  .card:hover {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  .card img {
+    width: 80px;
+    height: 80px;
+  }
+  .card h3 {
+    display: block;
+    margin-top: 10px;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-size: 16px;
+  }
+  

@@ -1,0 +1,46 @@
+.inicio {
+  padding: 50px;
+  align-items: center;
+  text-align: center;
+}
+.inicioclase1 {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto
+}
+.inicioclase1 p, .parrafo p{
+  font-size: 1.1rem;
+  color: black;
+}
+.bienvenida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.bienvenida h1 {
+  background: rgb(250, 250, 250);
+  border-radius: 30px;
+  padding: 20px 20px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1); 
+}
+.bienvenida h3 {
+  margin: 0;
+  color: black;
+}
+.parla{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.parla p{
+  font-size: 1.1rem;
+  color: #333;
+  background: rgb(250, 250, 250);
+  border-radius: 30px;
+  margin: auto 20px;
+  padding: 20px 20px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1); 
+  height: auto;
+  width: 300px;
+}

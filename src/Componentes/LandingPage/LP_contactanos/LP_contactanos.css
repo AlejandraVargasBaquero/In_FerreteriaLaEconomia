@@ -1,0 +1,69 @@
+.contactanos {
+    text-align: center;
+    padding: 30px 15px;
+}
+.contactanos h1 {
+    background: rgb(250, 250, 250);
+    border-radius: 30px;
+    padding: 20px 20px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+.contactanos h3 {
+    margin: 10px 0;
+    color: #000000;
+}
+.contactanos .intro {
+    font-size: 1.1rem;
+    color: #333;
+    max-width: 700px;
+    margin: 15px auto;
+}
+.info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+.datos{
+    background: rgb(250, 250, 250);;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 30px;
+    margin-bottom: 70px;
+}
+.datos p {
+    font-size: 1.1rem;
+    color: #444;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.icono {
+    color: #997a00;
+    font-size: 1.2rem;
+}
+.mapa{
+    width: 500px;
+    height: 300px;
+    padding: 40px;
+    margin-top: 30px;
+}
+.mapa iframe {
+    width: 90%;
+    max-width: 800px;
+    height: 220px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.15);
+}
+.ultimo{
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}

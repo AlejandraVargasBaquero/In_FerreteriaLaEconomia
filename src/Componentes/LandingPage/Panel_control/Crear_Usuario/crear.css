@@ -1,0 +1,121 @@
+.crear {
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background: 
+    linear-gradient(rgba(3, 38, 85, 0.6), rgba(0, 110, 255, 0.6)),  
+    url(../fondo.png) no-repeat center center; 
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;   
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.crear form {
+  background: rgba(133, 154, 250, 0.322);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  width: 75%;             
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* tres columnas */
+  gap: 25px 30px;
+  box-sizing: border-box;
+}
+
+.requerimientos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.requerimientos h3 {
+  grid-column: span 3;  
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px auto 20px auto;
+  color: #fdfdfd; 
+  text-align: center;
+  background: rgba(0, 0, 0, 0.37);
+  padding: 15px 50px; 
+  border-radius: 25px; 
+  letter-spacing: 1px; 
+
+}
+
+.requerimientos input {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 2px solid #666666;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+  width: 83%;  
+  margin: auto;
+  display: block;
+  text-align: center;
+}
+.requerimientos input:focus {
+  border-color: #000000;
+  box-shadow: 0 0 4px #004aad88;
+}
+
+.requerimientos select {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 2px solid #666666;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+  width: 90%;
+  margin: auto;
+  display: block;
+  text-align: center;
+  background: #fff; 
+}
+.requerimientos select:focus {
+  border-color: #000000;
+  box-shadow: 0 0 4px #004aad88;
+}
+
+.boton_acciones {
+  grid-column: span 3; 
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  gap: 170px;
+  margin-top: 20px;
+}
+
+.boton_acciones button {
+  background-color: #004aad;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 2px 2px 6px #00000055;
+  transition: 0.2s;
+}
+.boton_acciones button:hover {
+  background-color: #003080;
+}
+.boton_acciones button:active {
+  background-color: #001c4d;
+}
+.boton---regresar {
+  position: absolute;    
+  top: 20px;         
+  left: 20px;         
+  width: 60px;
+  height: auto;       
+  border-radius: 50%;
+  cursor: pointer;
+}
