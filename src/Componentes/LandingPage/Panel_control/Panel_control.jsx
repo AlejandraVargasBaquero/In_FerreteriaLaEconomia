@@ -1,42 +1,34 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Panel_control.css';
-import Atras from './atras.png';
-import Logo from './logo.png';
-import { FaCubes } from "react-icons/fa";
-import { IoPersonAdd } from "react-icons/io5";
-import { FaHandshake } from "react-icons/fa";
-
+"use client"
+import { useNavigate } from "react-router-dom"
+import "./Panel_control.css"
+import { FaCubes, FaHandshake, FaChartBar, FaFileInvoice, FaArrowLeft } from "react-icons/fa"
+import { IoPersonAdd } from "react-icons/io5"
 
 const PanelControl = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  const menuItems = [
+    { icon: <FaCubes size={24} />, label: "PRODUCTOS", path: "/lista_de_productos" },
+    { icon: <FaHandshake size={24} />, label: "PROVEEDORES", path: "/lista_de_proveedores" },
+    { icon: <FaFileInvoice size={24} />, label: "REMISIÓN", path: "/remision" },
+    { icon: <IoPersonAdd size={24} />, label: "CREAR USUARIO", path: "/crear.usuario" },
+    { icon: <FaChartBar size={24} />, label: "REPORTES", path: "/reportes" },
+  ]
 
   return (
-    <div className="panel">
-      <img src={Atras} alt="Back" className="regresar" onClick={() => navigate('/login')} />
-      <img src={Logo} alt="Logo" className="log0" />
+    <div className="sidebar-container">
 
-      <div className="titu1o">
-        <h1>PANEL DE CONTROL</h1>
-        <h3 className='linealarga'>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</h3>
-      </div>
-
-      <div className="cards">
-        <div className="card" onClick={() => navigate("/lista_de_productos")}>
-          <h3>PRODUCTOS</h3>
-          <FaCubes size={50}/>
-        </div>
-        <div className="card" onClick={() => navigate("/lista_de_proveedores")}>
-          <h3>PROVEEDORES</h3>
-          <FaHandshake size={50}/>
-        </div>
-        <div className="card" onClick={() => navigate("/crear.usuario")}>
-          <h3>CREAR USUARIO</h3>
-          <IoPersonAdd size={40}/>
-        </div>
-      </div>
+      {/* Sidebar con items */}
+      <nav className="sidebar">
+        {menuItems.map((item, index) => (
+          <div key={index} className="sidebar-item" onClick={() => navigate(item.path)}>
+            <div className="sidebar-icon">{item.icon}</div>
+            <span className="sidebar-label">{item.label}</span>
+          </div>
+        ))}
+      </nav>
     </div>
-  );
-};
+  )
+}
 
-export default PanelControl;
+export default PanelControl

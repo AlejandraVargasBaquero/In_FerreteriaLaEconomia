@@ -1,37 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import Atras from '../atras.png'
-import { useNavigate } from 'react-router-dom';
-import Letrero from './letrero.png'
-import './registrar_productos.css'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./registrar_productos.css";
+import "./In_Productos.css"; // Reutiliza header y botones
 
 const RegistrarProducto = () => {
   const navigate = useNavigate();
+
   const [producto, setProducto] = useState({
-    nombreProducto: '',
-    proCategoria: '',
+    nombreProducto: "",
+    proCategoria: "",
     proUnidad: 0,
     proCantidad: 0,
     proPrecioEntrada: 0,
     proPrecioSalida: 0,
-    proDescuento: 0
+    proDescuento: 0,
   });
 
-  const [productos, setProductos] = useState([]);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [idEditar, setIdEditar] = useState(null);
-
-  const [busquedaNombre, setBusquedaNombre] = useState('');
-  const [busquedaCategoria, setBusquedaCategoria] = useState('');
-
-  const fetchProductos = async () => {
-    const res = await fetch("http://localhost:8080/productos/obtener");
-    const data = await res.json();
-    setProductos(data);
-  };
-
-  useEffect(() => {
-    fetchProductos();
-  }, []);
+  const [mensaje, setMensaje] = useState(""); // ✅ mensaje de confirmación
 
   const handleChange = (e) => {
     setProducto({ ...producto, [e.target.name]: e.target.value });
@@ -39,152 +24,159 @@ const RegistrarProducto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = modoEdicion
-      ? `http://localhost:8080/productos/${idEditar}`
-      : "http://localhost:8080/productos/guardar";
 
-    const method = modoEdicion ? 'PUT' : 'POST';
+    try {
+      const res = await fetch("http://localhost:8080/productos/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(producto),
+      });
 
-    await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ ...producto, id: idEditar })
-    });
+      if (res.ok) {
+        setMensaje("✅ Producto guardado correctamente");
+        setProducto({
+          nombreProducto: "",
+          proCategoria: "",
+          proUnidad: 0,
+          proCantidad: 0,
+          proPrecioEntrada: 0,
+          proPrecioSalida: 0,
+          proDescuento: 0,
+        });
 
-    setProducto({
-      nombreProducto: '',
-      proCategoria: '',
-      proUnidad: 0,
-      proCantidad: 0,
-      proPrecioEntrada: 0,
-      proPrecioSalida: 0,
-      proDescuento: 0
-    });
-    setModoEdicion(false);
-    setIdEditar(null);
-    fetchProductos();
+        // Oculta el mensaje después de 3 segundos
+        setTimeout(() => setMensaje(""), 3000);
+      } else {
+        setMensaje("❌ Error al guardar el producto");
+        setTimeout(() => setMensaje(""), 3000);
+      }
+    } catch (error) {
+      setMensaje("⚠️ Error de conexión con el servidor");
+      setTimeout(() => setMensaje(""), 3000);
+    }
   };
-
-  const handleEditar = (prod) => {
-    setProducto(prod);
-    setModoEdicion(true);
-    setIdEditar(prod.idProducto || prod.id);
-  };
-
-  const handleEliminar = async (id) => {
-    await fetch(`http://localhost:8080/productos/${id}`, { method: 'DELETE' });
-    fetchProductos();
-  };
-
-  const categoriasUnicas = [...new Set(productos.map(p => p.proCategoria))];
-
-  const productosFiltrados = productos.filter(p =>
-    p.nombreProducto.toLowerCase().includes(busquedaNombre.toLowerCase()) &&
-    (busquedaCategoria === '' || p.proCategoria === busquedaCategoria)
-  );
 
   return (
-    <div className='registrar-productos'>
-      <div className="ferreteriaimg">
-        <img src={Letrero}  />
+    <div className="registrar-wrap">
+      {/* Header fijo arriba */}
+      <div className="header-section sticky">
+        <h1 className="page-title">Registrar producto</h1>
+        <div className="acciones-top">
+          <button
+            className="btn-modificar"
+            onClick={() => navigate("/lista_de_productos")}
+          >
+            ← Volver al inventario
+          </button>
+        </div>
       </div>
-      <img src={Atras}  className="boton--regresar" onClick={() => navigate('/lista_de_productos')} />
-      <div className='partedearriba'>
-        <h2>Registrar producto</h2>
-        <h3>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</h3>
-      </div>
-      
 
-      <form  className='formregistro' onSubmit={handleSubmit}>
-        <div className='uno'>
-          <div className="grupo">
+      {/* Mensaje de éxito o error */}
+      {mensaje && <div className="alerta-mensaje">{mensaje}</div>}
+
+      {/* Formulario */}
+      <form className="form-card grande" onSubmit={handleSubmit}>
+        <div className="form-title">
+          <h2>Datos del producto</h2>
+          <p>Completa los campos para registrar un nuevo producto.</p>
+        </div>
+
+        <div className="grid">
+          <div className="campo">
             <label>Nombre del Producto</label>
-            <input name="nombreProducto" placeholder="Nombre" value={producto.nombreProducto} onChange={handleChange} required />
+            <input
+              name="nombreProducto"
+              placeholder="Ej. Tornillo 3/16 x 6"
+              value={producto.nombreProducto}
+              onChange={handleChange}
+              required
+            />
           </div>
-          <div className="grupo">
+
+          <div className="campo">
             <label>Categoría</label>
-            <input name="proCategoria" placeholder="Categoría" value={producto.proCategoria} onChange={handleChange} required />
+            <input
+              name="proCategoria"
+              placeholder="Ej. Ferretería / Construcción"
+              value={producto.proCategoria}
+              onChange={handleChange}
+              required
+            />
           </div>
-          <div className="grupo">
+
+          <div className="campo">
             <label>Unidad</label>
-            <input name="proUnidad" type="number" placeholder="Unidad" value={producto.proUnidad} onChange={handleChange} required />
+            <input
+              name="proUnidad"
+              type="number"
+              min="0"
+              placeholder="Ej. 1"
+              value={producto.proUnidad}
+              onChange={handleChange}
+              required
+            />
           </div>
-          <div className="grupo">
+
+          <div className="campo">
             <label>Cantidad</label>
-            <input name="proCantidad" type="number" placeholder="Cantidad" value={producto.proCantidad} onChange={handleChange} required />
+            <input
+              name="proCantidad"
+              type="number"
+              min="0"
+              placeholder="Ej. 50"
+              value={producto.proCantidad}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="campo">
+            <label>Precio de Entrada</label>
+            <input
+              name="proPrecioEntrada"
+              type="number"
+              min="0"
+              placeholder="Ej. 2500"
+              value={producto.proPrecioEntrada}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="campo">
+            <label>Precio de Salida</label>
+            <input
+              name="proPrecioSalida"
+              type="number"
+              min="0"
+              placeholder="Ej. 3500"
+              value={producto.proPrecioSalida}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="campo">
+            <label>Descuento (%)</label>
+            <input
+              name="proDescuento"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="Ej. 10"
+              value={producto.proDescuento}
+              onChange={handleChange}
+              required
+            />
           </div>
         </div>
 
-        <div className='dos'>
-          <div className="grupo">
-            <label>Precio de Entrada</label>
-            <input name="proPrecioEntrada" type="number" placeholder="Precio Entrada" value={producto.proPrecioEntrada} onChange={handleChange} required />
-          </div>
-          <div className="grupo">
-            <label>Precio de Salida</label>
-            <input name="proPrecioSalida" type="number" placeholder="Precio Salida" value={producto.proPrecioSalida} onChange={handleChange} required />
-          </div>
-          <div className="grupo">
-            <label>Descuento (%)</label>
-            <input name="proDescuento" type="number" placeholder="Descuento" value={producto.proDescuento} onChange={handleChange} required />
-          </div>
-          <button className='guardarcambios'>{modoEdicion ? "Actualizar" : "Guardar"}</button>
+        <div className="form-actions">
+          <button className="btn-primary" type="submit">
+            Guardar
+          </button>
         </div>
       </form>
-
-      <div className="filtros">
-        <div className="filtro">
-          <label htmlFor="busquedaNombre">Buscar Nombre:</label>
-          <input
-            type="text"
-            id="busquedaNombre"
-            value={busquedaNombre}
-            onChange={(e) => setBusquedaNombre(e.target.value)}
-            placeholder="Producto"
-          />
-        </div>
-        <div className="filtro">
-          <label htmlFor="busquedaCategoria">Buscar Categoría:</label>
-          <select
-            id="busquedaCategoria"
-            value={busquedaCategoria}
-            onChange={(e) => setBusquedaCategoria(e.target.value)}
-          >
-            <option value="">Todos</option>
-            {categoriasUnicas.map((categoria, index) => (
-              <option key={index} value={categoria}>{categoria}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <table className='tabla-productos'>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Precio Entrada</th>
-            <th>Precio Salida</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productosFiltrados.map((p) => (
-            <tr key={p.idProducto || p.id}>
-              <td>{p.nombreProducto}</td>
-              <td>{p.proCategoria}</td>
-              <td>${p.proPrecioEntrada}</td>
-              <td>${p.proPrecioSalida}</td>
-              <td>
-                <button className='guardacambios' onClick={() => handleEditar(p)} style={{ marginRight: "5px" }}>Editar</button>
-                <button className='guardacambios' onClick={() => handleEliminar(p.idProducto || p.id)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 };

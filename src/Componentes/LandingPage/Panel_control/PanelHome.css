@@ -1,0 +1,73 @@
+html, body {
+  font-family:'Inter', system-ui, sans-serif;
+  background:#f2f4f8;
+  overflow-x:hidden;   /* bloquea solo horizontal */
+}
+.panel-home-hero {
+  height:100vh;
+  overflow:hidden;     /* solo bloquea scroll aquí */
+}
+
+
+/* Contenedor principal: a la izquierda */
+.panel-home-hero {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 9.3%; /* 🔹 aumenta para moverlo más hacia el centro */
+  overflow: hidden;
+}
+
+
+/* Tarjeta azul oscuro */
+.welcome-card{
+  position:relative; z-index:2;
+  background: linear-gradient(135deg, #081f53, #153b85);
+  border:1.5px solid rgba(255,255,255,0.25);
+  border-radius:18px;
+  padding:clamp(1.4rem,3vw,2.8rem) clamp(1.8rem,4vw,3.4rem);
+  text-align:center;
+  max-width:900px; width:85%;
+  box-shadow:0 10px 40px rgba(0,0,0,0.45);
+  animation: fadeInUp .8s ease both;
+}
+
+/* Aparición suave */
+@keyframes fadeInUp { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+
+/* Tipografía (sin cursor; permite salto de línea natural) */
+.hero-title{
+  margin:0 0 .6rem 0;
+  font-size:clamp(2rem,5vw,3.4rem);
+  font-weight:900; text-transform:uppercase; color:#fff; letter-spacing:2px;
+  text-shadow:0 2px 8px rgba(0,0,0,.5), 0 0 15px rgba(120,160,255,.45);
+  /* NO usar white-space: nowrap; para que reflow funcione */
+}
+.hero-subtitle{
+  margin:0;
+  font-size:clamp(1rem,1.6vw,1.25rem);
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(235,240,255,.92);
+}
+
+/* Ícono decorativo */
+.rotating-logo{ position:absolute; top:1.2rem; left:1.2rem; z-index:3; display:flex; align-items:center; justify-content:center; }
+.hardware-icon{
+  font-size:2.8rem; color:#3679ff;
+  filter: drop-shadow(0 0 12px rgba(47,115,255,.45));
+  animation: rotateTools 5s ease-in-out infinite;
+  opacity:.95; transition: transform .3s ease;
+}
+.hardware-icon:hover{ transform:rotate(10deg) scale(1.1); filter:drop-shadow(0 0 16px rgba(47,115,255,.6)); }
+@keyframes rotateTools{ 0%,100%{transform:rotate(0)} 50%{transform:rotate(10deg)} }
+
+/* Responsivo: centrar en móvil */
+@media (max-width:768px){
+  .panel-home-hero{ justify-content:center; padding-left:0; }
+  .welcome-card{ width:92%; padding:1rem 1.4rem; }
+  .hero-title{ font-size:2rem; }
+  .hero-subtitle{ font-size:.95rem; }
+}

@@ -1,51 +1,241 @@
-.productos{
-    text-align: center;
-}
-.productos h1{
-    background: rgb(250, 250, 250);
-    border-radius: 30px;
-    padding: 20px 20px;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.1); 
-    width: 500px;       
-    margin: 0 auto;     
-    text-align: center;
-}
-.productos p{
-    font-size: 1.1rem;
-    color: black;
-}
-.numero1 p, .numero2 p{
-    font-size: 1.1rem;
-    color: #444;
-}
-.imagenesproductos img{
-    width: 200px;
-    height: 200px;
-    border-radius: 30px;
-    margin: 20px 20px;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.2); 
-}
-.inventario{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.inventario1{
-    display: flex;
-}
-.numero1, .numero2{
-    background: rgb(250, 250, 250);
-    border-radius: 30px;
-    margin: 0 20px 0;
-    padding: 20px 20px;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.1); 
-    height: auto;
-}
-.numero1, .numero2 p{
-    padding: auto 10px 100px;
-}
-.inventario p{
-    padding: auto 20px;
-    text-align: center;
+/* =========================
+   LP_productos.css — FINAL
+   ========================= */
+
+/* ===== FONDO GENERAL AZUL PASTEL ===== */
+.ferre-productos {
+  background: #f5f7ff;
+  padding: 40px 0 60px;
 }
 
+/* ===== ENCABEZADO ===== */
+.ferre-prod-head {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 12px;
+  color: #0f172a;
+  text-align: left;
+}
+
+.ferre-prod-head h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+}
+
+.ferre-prod-barrr {
+  display: block;
+  width: 65%;
+  height: 4px;
+  border-radius: 999px;
+  background: #2563eb;
+  margin: 10px 0 18px;
+}
+
+.ferre-prod-copy p {
+  margin: 8px 0;
+  font-size: 1.05rem;
+  color: #0f172a;
+  line-height: 1.75;
+}
+
+/* ===== SLIDER ===== */
+.ferre-slider {
+  width: 100%;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== PANEL INTERNO DEL SLIDER: lámina 3D real ===== */
+.ferre-page {
+  /* ◼️ Altura de cada “costilla” */
+  --ridge: 32px;
+
+  /* ◼️ Colores base (fríos/metálicos) */
+  --c-hi:  rgba(255,255,255,0.95);
+  --c-l1:  rgba(246,249,255,0.92);
+  --c-l2:  rgba(234,240,255,0.90);
+  --c-mid: rgba(224,232,252,0.88);
+  --c-sh:  rgba(190,200,220,0.88);
+
+  background:
+    /* (1) Curvatura de cada franja */
+    repeating-linear-gradient(
+      to bottom,
+      var(--c-hi) 0px,
+      var(--c-hi) 2px,
+      var(--c-l1) 6px,
+      var(--c-l2) 14px,
+      var(--c-mid) 24px,
+      var(--c-sh) calc(var(--ridge) - 2px),
+      var(--c-sh) calc(var(--ridge) - 1px)
+    ),
+    /* (2) Sombra del pliegue (línea fina 1px) */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.12) 0px,
+      rgba(0,0,0,0.12) 1px,
+      rgba(0,0,0,0.00) var(--ridge)
+    ),
+    /* (3) Reflejo especular justo antes del pliegue */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.00) 0px,
+      rgba(255,255,255,0.00) calc(var(--ridge) - 6px),
+      rgba(255,255,255,0.55) calc(var(--ridge) - 5px),
+      rgba(255,255,255,0.00) var(--ridge)
+    );
+
+  background-blend-mode: normal, multiply, screen;
+
+  border-radius: 18px;
+  border: 1px solid #dbe3f8;
+  padding: 28px 32px;
+  max-width: 1150px;
+  width: 95%;
+
+  /* Sombra exterior */
+  box-shadow:
+    0 22px 40px rgba(13, 41, 89, 0.12),
+    0 6px 14px rgba(13, 41, 89, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(13, 41, 89, 0.06);
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== CONTENIDO DEL SLIDER ===== */
+.ferre-page__body {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+/* Subtítulo superior */
+.ferre-page__subtitle {
+  display: inline-block;
+  background: #103a86;
+  color: #e8eefc;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Imagen del producto */
+.ferre-page__img {
+  display: grid;
+  place-items: center;
+}
+
+.ferre-page__img img {
+  width: 100%;
+  max-width: 520px;
+  height: 360px;
+  object-fit: contain;
+  background: #ffffff;
+  border: 2px solid #d5e0f7;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== TEXTO CON SOMBRA 3D (sin contenedor blanco) ===== */
+.ferre-page__content {
+  position: relative;
+  text-align: left;
+  color: #0f172a;
+}
+
+/* Chip */
+.ferre-chip {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow:
+    0 3px 8px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+/* Título con relieve 3D */
+.ferre-page__content h3 {
+  margin: 12px 0 8px;
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  font-weight: 800;
+  color: #0b172f;
+  text-shadow:
+    0 1px 0 #ffffff,
+    0 2px 0 #e8edff,
+    0 3px 0 #d5def9,
+    0 4px 0 #c8d2f3,
+    0 6px 10px rgba(13, 41, 89, 0.25),
+    0 10px 20px rgba(13, 41, 89, 0.15);
+}
+
+/* Descripción con contraste alto */
+.ferre-page__content p {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #0f1a3d;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== DOTS DEL SLIDER ===== */
+.ferre-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.ferre-dot {
+  width: 26px;
+  height: 10px;
+  border-radius: 999px;
+  background: #5b80e6;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ferre-dot:hover {
+  transform: scale(1.1);
+  background: #2563eb;
+}
+
+.ferre-dot.is-active {
+  background: #0f172a; /* negro azulado */
+  transform: scale(1.15);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 980px) {
+  .ferre-page__body {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .ferre-page__content {
+    text-align: center;
+  }
+
+  .ferre-dots {
+    justify-content: center;
+  }
+
+  .ferre-page__img img {
+    height: 300px;
+  }
+}

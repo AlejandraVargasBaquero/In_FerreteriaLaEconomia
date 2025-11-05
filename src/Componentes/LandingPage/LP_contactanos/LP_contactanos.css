@@ -1,69 +1,193 @@
-.contactanos {
-    text-align: center;
-    padding: 30px 15px;
+.seccion-contacto {
+  padding: 60px 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2f6 100%);
+  color: #000; /* 🔹 Todo el texto en negro */
 }
-.contactanos h1 {
-    background: rgb(250, 250, 250);
-    border-radius: 30px;
-    padding: 20px 20px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    width: 500px;
-    margin: 0 auto 20px auto;
-    text-align: center;
+
+.contacto-container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.contactanos h3 {
-    margin: 10px 0;
-    color: #000000;
+
+.contacto-header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
-.contactanos .intro {
-    font-size: 1.1rem;
-    color: #333;
-    max-width: 700px;
-    margin: 15px auto;
+
+.contacto-header h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #000; /* 🔹 Negro */
+  margin: 0 0 1rem 0;
 }
-.info {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 300px;
+
+.ferre-prod-barrrr {
+  display: block;
+  width: 65%;
+  height: 4px;
+  border-radius: 999px;
+  background: #2563eb;
+  margin: 10px auto 18px auto; /* 🔹 centrada horizontalmente */
 }
-.datos{
-    background: rgb(250, 250, 250);;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    border-radius: 30px;
-    margin-bottom: 70px;
+
+.contacto-header p {
+  font-size: 1.15rem;
+  color: #000; /* 🔹 Negro */
+  margin: 0;
 }
-.datos p {
-    font-size: 1.1rem;
-    color: #444;
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+
+.contacto-intro {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2e6cf0;
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #000; /* 🔹 Negro */
+  text-align: center;
 }
-.icono {
-    color: #997a00;
-    font-size: 1.2rem;
+
+.contacto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
-.mapa{
-    width: 500px;
-    height: 300px;
-    padding: 40px;
-    margin-top: 30px;
+
+.contacto-info {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  color: #000; /* 🔹 Negro */
 }
-.mapa iframe {
-    width: 90%;
-    max-width: 800px;
-    height: 220px;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.15);
+
+.contacto-info h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000; /* 🔹 Negro */
+  margin: 0 0 1.5rem 0;
 }
-.ultimo{
-    font-size: 1.1rem;
-    color: #333;
-    margin: 0;
-    padding: 0;
+
+.info-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.info-icon {
+  color: #2563eb; /* 🔹 Azul para destacar íconos */
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.info-item p {
+  margin: 0;
+  color: #000; /* 🔹 Negro */
+}
+
+.info-label {
+  font-weight: 600;
+  color: #000; /* 🔹 Negro */
+  font-size: 0.95rem;
+}
+
+.info-item a {
+  color: #000; /* 🔹 Negro */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.info-item a:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+.contacto-mapa {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(11, 42, 99, 0.1);
+}
+
+.contacto-mapa iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  border: none;
+}
+
+.contacto-outro {
+  background: linear-gradient(135deg, #0b2a63 0%, #1e3a8a 100%);
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.contacto-outro strong {
+  font-weight: 700;
+}
+
+/* ===== BOTÓN WHATSAPP FLOTANTE ===== */
+.ws-float {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #25d366;
+  display: grid;
+  place-items: center;
+  color: white;
+  z-index: 50;
+  text-decoration: none;
+  font-size: 28px;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+  transition: all 0.3s ease;
+}
+
+.ws-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.4);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .contacto-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contacto-mapa iframe {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .seccion-contacto {
+    padding: 40px 1.5rem;
+  }
+
+  .contacto-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .contacto-info {
+    padding: 1.5rem;
+  }
+
+  .ws-float {
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+  }
 }

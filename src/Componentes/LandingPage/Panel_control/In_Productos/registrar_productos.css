@@ -1,80 +1,128 @@
-.formregistro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin: 70px 130px 30px 130px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-  padding-left: 20px;
-  padding-top: 20px;
-  border-radius: 30px;
-
-}
-.uno, .dos {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  margin-bottom: 20px;
-}
-.grupo {
-  align-items: center;
-  margin: 5px 15px 5px 0; 
-}
-.grupo label {
-  width: 90px;
-  font-weight: bold;
-  font-size: 13px;
-  margin-right: 6px; 
-}
-.grupo input {
-  width: 150px;
-  padding: 6px 8px;
-  font-size: 13px;
-  border: 1.5px solid #7c7c7c;
-  border-radius: 6px;
-  outline: none;
-}
-.uno input:focus, .dos input:focus {
-  border-color: #5c5c5c;
-}
-.partedearriba{
-  background: white;
-  width: 600px;
-  height: 70px;
-  border-radius: 10px;
+/* ====== CONTENEDOR GENERAL ====== */
+.registrar-wrap {
+  max-width: 1300px; /* más ancho */
   margin: 0 auto;
+  padding: 40px;
+  animation: fadeIn 0.6s ease-in;
 }
-.partedearriba h2 {
+
+/* ====== MENSAJE DE CONFIRMACIÓN ====== */
+.alerta-mensaje {
+  background: #d1fae5; /* verde suave */
+  color: #065f46; /* texto verde oscuro */
+  border: 1px solid #10b981;
+  padding: 12px 20px;
+  margin: 20px auto;
+  max-width: 600px;
   text-align: center;
-  font-size: 40px;
-  margin-bottom: 20px;
-  padding-top: 8px;
+  font-weight: 600;
+  border-radius: 10px;
+  animation: fadeIn 0.4s ease-in;
 }
-.guardarcambios{
-  background: #004aad;
-  color: aliceblue;
-  border: none;
-  border-radius: 5px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.4);
-  width: 80px; 
-  height: 35px;
-  margin-left: 50px;
-  cursor: pointer;
+
+/* ====== CARD DEL FORMULARIO ====== */
+.form-card.grande {
+  margin: 40px auto 80px;
+  width: 95%;
+  border-radius: 20px;
+  padding: 40px 45px; /* más grande */
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,255,0.85));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.7);
 }
-.boton--regresar{
-  border-radius: 100%;
-  width: 60px;
-  position: absolute;
-  margin: 20px auto auto 10px;
-  cursor: pointer;
+
+/* Título */
+.form-title h2 {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0a58ff, #003baf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.guardacambios{
-  background: #003270c5;
-  color: aliceblue;
-  border: none;
-  height: 30px;
-  width: 70px;
-  border-radius: 5px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.3);
+.form-title p {
+  margin: 0 0 24px 0;
+  color: #475569;
+  font-size: 15px;
+}
+
+/* ====== GRID ====== */
+.grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ====== CAMPOS ====== */
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.campo input {
+  padding: 13px 15px;
+  border-radius: 12px;
+  border: 1.5px solid #d0d7e2;
+  background: #fff;
+  font-size: 15px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.campo input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+/* ====== BOTÓN GUARDAR ====== */
+.form-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0a58ff, #003baf);
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(10, 88, 255, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(10, 88, 255, 0.34);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

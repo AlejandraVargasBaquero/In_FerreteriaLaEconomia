@@ -1,21 +1,22 @@
-.clase1 {
+/* ===============================
+   FONDO Y CONTENEDOR PRINCIPAL
+=================================*/
+.clase1r {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh; 
     width: 100vw;      
     background: 
-        linear-gradient(rgba(254, 255, 255, 0.685)),  
+        linear-gradient(rgba(254,255,255,0.685), rgba(254,255,255,0.685)),  
         url(./fondooo.png) no-repeat center center; 
     background-size: cover; 
 }
 
-.fondo{ /*quitar todo esto*/
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-.clase1 form{
+/* ===============================
+   FORMULARIO PRINCIPAL (LOGIN BOX)
+=================================*/
+.clase1r form{
     margin: 100px auto 50px auto;
     padding: 30px;
     box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.671); 
@@ -27,7 +28,11 @@
     width: 80%;
     max-width: 420px;
 }
-.logo {
+
+/* ===============================
+   LOGO SUPERIOR
+=================================*/
+.logor {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -35,63 +40,89 @@
     height: 50px;
     border-radius: 50%;
 }
-.clase1 .imagen{
+
+/* ===============================
+   ÍCONO DEL USUARIO (GRANDE)
+=================================*/
+.clase1r .imagenr{
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 100px;
+    margin-top: 8px;
+    margin-bottom: 15px;
 }
-.clase1 .login-registro{
-    display: contents;
-    justify-content: center;
+
+/* ===============================
+   CAMPOS DE USUARIO Y CONTRASEÑA
+=================================*/
+.clase1r .login-registrorr{
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 8px;                      
+    margin: 10px 0 14px;           
 }
-.login-registro h3{
-    color: white;
-    background: rgba(0, 0, 0, 0.3); 
-    width: 40%;
-    height: 20px;
-    border-radius: 15px;
-    padding: 6px 8px;     
-    margin: 10px auto;       
+
+.login-registrorr h3{
+    color: #fff;
+    background: rgba(4, 27, 71, 0.35); 
+    width: min(260px, 70%);      
+    border-radius: 999px;
+    padding: 8px 14px;     
+    margin: 0;       
     text-align: center;      
-    margin-bottom: 3px;   
     font-size: 15px;
-    font-weight: normal;
+    font-weight: 600;
+    line-height: 1.2;
+    backdrop-filter: saturate(120%) blur(1px);
 }
-.login-registro input{
-    height: 20px;
-    width: 70%;
+
+.login-registrorr input{
+    height: 38px;
+    width: min(340px, 88%);
     background: rgb(215, 237, 255);
     border-radius: 20px;
     border: none;
-    margin: 5px 55px;
-    padding: 10px;
+    margin: 0;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    font-size: 15px;
 }
-.login-registro input::placeholder{
+
+.login-registrorr input::placeholder{
     color: rgb(177, 175, 175);
 }
-.clase1 .recuperarcontraseña{
+
+/* ===============================
+   LINK "¿OLVIDASTE TU CONTRASEÑA?"
+=================================*/
+.clase1r .recuperarcontrasenar{
     text-align: center;
+    margin-top: 6px;
 }
-.recuperarcontraseña a{
+.recuperarcontrasenar a{
     color: rgb(32, 32, 32);
     text-decoration: none;
     font-size: 15px;
 }
-.recuperarcontraseña a:hover{
+.recuperarcontrasenar a:hover{
     color: rgb(8, 0, 128);
 }
-.recuperarcontraseña a:active{
+.recuperarcontrasenar a:active{
     color: rgb(71, 59, 184);
 }
-.clase1 .boton{
+
+/* ===============================
+   BOTÓN DE LOGIN
+=================================*/
+.clase1r .botonr{
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.boton button{
-    background: rgb(36, 36, 36);
+.botonr button{
+    background:#001d50; 
     color: aliceblue;
     border-radius: 10px;
     width: 70px;
@@ -99,12 +130,166 @@
     border: none;
     margin: 20px;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
-.boton button:hover{
-    background:  rgb(104, 104, 104);
-    color: black;
+.botonr button:hover{
+    background:#0751cc;
+    color: rgb(255, 255, 255);
 }
-.boton button:active{
+.botonr button:active{
     background: aliceblue;
     color: black;
+}
+
+/* ===============================
+   ESTRUCTURA DEL CONTENEDOR GENERAL
+=================================*/
+.clase1r.contenedor-loginr{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 24px;
+  min-height: 100vh; 
+}
+
+.col-izqr{
+  width: 100%;
+  max-width: 480px;
+}
+
+/* ===============================
+   DOS COLUMNAS AL MOSTRAR PANEL DE RECUPERACIÓN
+=================================*/
+.clase1r.contenedor-loginr:has(.forgot-panelr){
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;    
+  justify-items: center;   
+}
+
+/* ===============================
+   PANEL DE RECUPERACIÓN DE CONTRASEÑA
+=================================*/
+.clase1r.contenedor-loginr:has(.forgot-panelr) .col-derr.forgot-panelr{
+  align-self: center;      
+  justify-self: center;    
+  background: 
+        linear-gradient(rgba(0, 56, 129, 0.603), rgba(31, 132, 255, 0.63));
+  background-size: cover;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.clase1r.contenedor-loginr:has(.forgot-panelr) .col-izqr{
+  align-self: start;       
+  justify-self: center;    
+}
+
+/* ===============================
+   ESTILOS INTERNOS DEL PANEL DERECHO
+=================================*/
+.col-derr.forgot-panelr h3,
+.col-derr.forgot-panelr h4{ 
+  margin: 8px 0 6px; 
+  font-weight: 700; 
+  text-align: center; 
+  color: #fff;
+}
+.col-derr.forgot-panelr p{ 
+  margin: 4px 0 12px; 
+  color:#f7faff; 
+  font-size:.95rem; 
+  text-align:center; 
+}
+
+.col-derr.forgot-panelr input{
+  width:95%;
+  padding:12px 14px;
+  border:1px solid #e5e7eb;
+  border-radius:40px;
+  font-size:1rem;
+  background:#ecf2ff;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+  margin-top:6px;
+}
+.col-derr.forgot-panelr input::placeholder{ color:#9ca3af; }
+.col-derr.forgot-panelr input:focus{
+  border-color:#464646;
+  box-shadow:0 0 0 4px rgba(11,102,255,.25);
+}
+
+.col-derr.forgot-panelr .modal-actionsr{
+  display:flex; 
+  gap:8px; 
+  margin-top:12px; 
+  justify-content:flex-end;
+}
+.col-derr.forgot-panelr .modal-actionsr button{
+  padding:12px 14px; 
+  border:1px solid #e5e7eb; 
+  border-radius:10px;
+  font-size:1rem; 
+  font-weight:600; 
+  background:#fff; 
+  cursor:pointer;
+  transition:background .15s, transform .02s, color .15s, border-color .15s;
+}
+.col-derr.forgot-panelr .modal-actionsr button:hover{ background:#f9fafb; }
+.col-derr.forgot-panelr .modal-actionsr button:last-child{
+  background:#001d50; 
+  color:#fff; 
+  border-color:transparent; 
+  font-weight:700;
+}
+.col-derr.forgot-panelr .modal-actionsr button:last-child:hover{ background:#0751cc; }
+.col-derr.forgot-panelr .modal-actionsr button:disabled{ opacity:.7; cursor:not-allowed; }
+
+.alertr{ 
+  margin-top:10px; 
+  padding:10px 12px; 
+  border-radius:8px; 
+  font-size:.95rem; 
+  line-height:1.3; 
+}
+.alertr.success{ background:#e7f7ee; border:1px solid #b9ebca; color:#065f46; }
+.alertr.error{ background:#fde8e8; border:1px solid #f5b5b5; color:#7f1d1d; }
+.sepr{ margin:16px 0; border:0; height:1px; background:#e5e7eb; opacity:.7; }
+
+/* ===============================
+   RESPONSIVE (MÓVIL)
+=================================*/
+@media (max-width: 980px){
+  .clase1r.contenedor-loginr,
+  .clase1r.contenedor-loginr:has(.forgot-panelr){
+    display:grid;
+    grid-template-columns: 1fr;
+    justify-items:center;
+  }
+
+  .clase1r form{
+    margin: 60px auto;
+    padding: 20px;
+    max-width: 360px;
+  }
+
+  .login-registrorr h3{
+    font-size: 14px;
+    width: 80%;
+  }
+
+  .login-registrorr input{
+    width: 90%;
+  }
+
+  .botonr button{
+    width: 80px;
+    height: 35px;
+  }
 }
