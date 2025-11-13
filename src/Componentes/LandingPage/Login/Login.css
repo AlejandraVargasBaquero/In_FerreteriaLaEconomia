@@ -78,7 +78,9 @@
     backdrop-filter: saturate(120%) blur(1px);
 }
 
-.login-registrorr input{
+/* ====== INPUTS CORREGIDOS (Correo y Contraseña IGUALES) ====== */
+.clase1r .login-registrorr input[type="text"],
+.clase1r .login-registrorr input[type="password"]{
     height: 38px;
     width: min(340px, 88%);
     background: rgb(215, 237, 255);
@@ -88,6 +90,15 @@
     padding: 10px 14px;
     box-sizing: border-box;
     font-size: 15px;
+}
+
+/* Fix para autocompletado de Chrome */
+.clase1r .login-registrorr input:-webkit-autofill,
+.clase1r .login-registrorr input:-webkit-autofill:hover,
+.clase1r .login-registrorr input:-webkit-autofill:focus{
+    -webkit-box-shadow: 0 0 0px 1000px rgb(215, 237, 255) inset !important;
+    box-shadow: 0 0 0px 1000px rgb(215, 237, 255) inset !important;
+    -webkit-text-fill-color: #000 !important;
 }
 
 .login-registrorr input::placeholder{
@@ -121,25 +132,6 @@
     justify-content: center;
     align-items: center;
 }
-.botonr button{
-    background:#001d50; 
-    color: aliceblue;
-    border-radius: 10px;
-    width: 70px;
-    height: 30px;
-    border: none;
-    margin: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-.botonr button:hover{
-    background:#0751cc;
-    color: rgb(255, 255, 255);
-}
-.botonr button:active{
-    background: aliceblue;
-    color: black;
-}
 
 /* ===============================
    ESTRUCTURA DEL CONTENEDOR GENERAL
@@ -171,6 +163,7 @@
 
 /* ===============================
    PANEL DE RECUPERACIÓN DE CONTRASEÑA
+   (MISMA ALTURA/SOMBRA/BORDE QUE LOGIN)
 =================================*/
 .clase1r.contenedor-loginr:has(.forgot-panelr) .col-derr.forgot-panelr{
   align-self: center;      
@@ -178,16 +171,17 @@
   background: 
         linear-gradient(rgba(0, 56, 129, 0.603), rgba(31, 132, 255, 0.63));
   background-size: cover;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+  padding: 30px;
+  border-radius: 30px; /* igual que el login */
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.671); /* igual que el login */
   width: 100%;
   max-width: 480px;
-  margin: 0 auto;
+  margin: 100px auto 50px auto; /* misma sensación de altura que el login */
 }
 
+/* El login cuando está junto al panel derecho */
 .clase1r.contenedor-loginr:has(.forgot-panelr) .col-izqr{
-  align-self: start;       
+  align-self: center;       
   justify-self: center;    
 }
 
@@ -196,13 +190,22 @@
 =================================*/
 .col-derr.forgot-panelr h3,
 .col-derr.forgot-panelr h4{ 
-  margin: 8px 0 6px; 
+  margin: 8px auto 10px; 
   font-weight: 700; 
   text-align: center; 
   color: #fff;
+
+  /* Fondo tipo “pastilla” igual que Correo/Contraseña */
+  background: rgba(4, 27, 71, 0.35);
+  width: min(260px, 70%);
+  border-radius: 999px;
+  padding: 8px 14px;
+  backdrop-filter: saturate(120%) blur(1px);
+  font-size: 16px;
 }
+
 .col-derr.forgot-panelr p{ 
-  margin: 4px 0 12px; 
+  margin: 4px 0 16px; 
   color:#f7faff; 
   font-size:.95rem; 
   text-align:center; 
@@ -225,32 +228,73 @@
   box-shadow:0 0 0 4px rgba(11,102,255,.25);
 }
 
+/* ===============================
+   BOTONES DEL PANEL DERECHO
+   (TODOS IGUALES AL GUARDAR/ENVIAR)
+=================================*/
 .col-derr.forgot-panelr .modal-actionsr{
   display:flex; 
   gap:8px; 
   margin-top:12px; 
   justify-content:flex-end;
 }
-.col-derr.forgot-panelr .modal-actionsr button{
-  padding:12px 14px; 
-  border:1px solid #e5e7eb; 
-  border-radius:10px;
-  font-size:1rem; 
-  font-weight:600; 
-  background:#fff; 
-  cursor:pointer;
-  transition:background .15s, transform .02s, color .15s, border-color .15s;
-}
-.col-derr.forgot-panelr .modal-actionsr button:hover{ background:#f9fafb; }
-.col-derr.forgot-panelr .modal-actionsr button:last-child{
-  background:#001d50; 
-  color:#fff; 
-  border-color:transparent; 
-  font-weight:700;
-}
-.col-derr.forgot-panelr .modal-actionsr button:last-child:hover{ background:#0751cc; }
-.col-derr.forgot-panelr .modal-actionsr button:disabled{ opacity:.7; cursor:not-allowed; }
 
+.col-derr.forgot-panelr .modal-actionsr button{
+  min-width: 110px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background:#001d50; 
+  color:#ffffff;
+  cursor:pointer;
+  transition:background .15s, transform .05s, color .15s, box-shadow .15s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+.col-derr.forgot-panelr .modal-actionsr button:hover{
+  background:#0751cc;
+}
+
+.col-derr.forgot-panelr .modal-actionsr button:active{
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.col-derr.forgot-panelr .modal-actionsr button:disabled{
+  opacity:.7; 
+  cursor:not-allowed; 
+  box-shadow:none;
+}
+
+/* ===============================
+   BOTÓN DE LOGIN (Mismo estilo que los otros)
+=================================*/
+.botonr button{
+    background:#001d50; 
+    color: aliceblue;
+    border-radius: 10px;
+    width: 110px;
+    height: 38px;
+    border: none;
+    margin: 20px;
+    cursor: pointer;
+    transition:background .15s, transform .05s, color .15s, box-shadow .15s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+.botonr button:hover{
+    background:#0751cc;
+}
+.botonr button:active{
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ===============================
+   ALERTAS Y SEPARADOR
+=================================*/
 .alertr{ 
   margin-top:10px; 
   padding:10px 12px; 
@@ -289,7 +333,11 @@
   }
 
   .botonr button{
-    width: 80px;
-    height: 35px;
+    width: 110px;
+    height: 38px;
+  }
+
+  .clase1r.contenedor-loginr:has(.forgot-panelr) .col-derr.forgot-panelr{
+    margin: 40px auto 30px auto;
   }
 }

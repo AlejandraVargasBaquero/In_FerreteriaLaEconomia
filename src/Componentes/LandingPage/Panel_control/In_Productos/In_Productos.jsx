@@ -18,6 +18,12 @@ export default function In_Productos() {
   const [busquedaCategoria, setBusquedaCategoria] = useState("Todos")
   const navigate = useNavigate()
 
+  // 🔹 Obtener permisos desde localStorage
+  const permisos = JSON.parse(localStorage.getItem("permisos") || "{}")
+  const rol = localStorage.getItem("rol") || "Empleado"
+  const esAdmin = permisos?.modificarProductos || rol.toLowerCase().includes("admin")
+
+  // 🔹 Cargar productos
   useEffect(() => {
     ;(async () => {
       try {
@@ -36,9 +42,12 @@ export default function In_Productos() {
     })()
   }, [])
 
+  // 🔹 Filtros
   const productosFiltrados = useMemo(() => {
     return productos.filter((p) => {
-      const nombreMatch = (p.nombreProducto ?? "").toLowerCase().includes((busquedaNombre ?? "").toLowerCase())
+      const nombreMatch = (p.nombreProducto ?? "")
+        .toLowerCase()
+        .includes((busquedaNombre ?? "").toLowerCase())
       const categoria = p.proCategoria ?? "Sin categoría"
       const categoriaMatch = busquedaCategoria === "Todos" || categoria === busquedaCategoria
       return nombreMatch && categoriaMatch
@@ -55,18 +64,21 @@ export default function In_Productos() {
       <div className="header-section sticky">
         <h1 className="page-title">Inventario de Productos</h1>
 
-        <div className="acciones-top">
-          <button className="btn-modificar" onClick={() => navigate("/registro_de_productos")}>
-            <span style={{ fontWeight: 700 }}>+</span> Agregar
-          </button>
-          <button
-            className="btn-modificar"
-            onClick={() => navigate("/modificar_productos")}
-            title="Ir a la gestión (editar/eliminar)"
-          >
-            ✎ Modificar
-          </button>
-        </div>
+        {/* 🔒 Botones solo visibles para administrador */}
+        {esAdmin && (
+          <div className="acciones-top">
+            <button className="btn-modificar" onClick={() => navigate("/registro_de_productos")}>
+              <span style={{ fontWeight: 700 }}>+</span> Agregar
+            </button>
+            <button
+              className="btn-modificar"
+              onClick={() => navigate("/modificar_productos")}
+              title="Ir a la gestión (editar/eliminar)"
+            >
+              ✎ Modificar
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="filtros-container">
@@ -82,9 +94,14 @@ export default function In_Productos() {
 
         <div className="filtro-item">
           <label>Categoría:</label>
-          <select value={busquedaCategoria} onChange={(e) => setBusquedaCategoria(e.target.value)}>
+          <select
+            value={busquedaCategoria}
+            onChange={(e) => setBusquedaCategoria(e.target.value)}
+          >
             {categoriasUnicas.map((cat, index) => (
-              <option key={index} value={cat}>{cat}</option>
+              <option key={index} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
@@ -102,6 +119,8 @@ export default function In_Productos() {
               <th>Precio Entrada</th>
               <th>Precio Salida</th>
               <th>Descuento (%)</th>
+              {/* 🔒 Solo admins verían acciones si existieran */}
+              {esAdmin && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -115,12 +134,23 @@ export default function In_Productos() {
                 <td>${p.proPrecioEntrada}</td>
                 <td>${p.proPrecioSalida}</td>
                 <td className="descuento">{p.proDescuento}%</td>
+                {/* 🔒 Solo admin vería botones extra */}
+                {esAdmin && (
+                  <td style={{ textAlign: "center" }}>
+                    <button
+                      className="btn-tabla-editar"
+                      onClick={() => navigate(`/modificar_productos?id=${p.idProducto}`)}
+                    >
+                      ✎
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
 
             {!productosFiltrados.length && (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: "14px" }}>
+                <td colSpan={esAdmin ? 9 : 8} style={{ textAlign: "center", padding: "14px" }}>
                   No hay productos con ese filtro.
                 </td>
               </tr>

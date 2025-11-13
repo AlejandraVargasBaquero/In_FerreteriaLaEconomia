@@ -8,341 +8,454 @@ const BASE_URL =
     (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
     "http://localhost:8080").replace(/\/+$/, "")
 
-const VENTA_ENDPOINTS = ["/api/venta"]
-const USUARIOS_ENDPOINTS = ["/prueba/listar/persona"]
+const VENTA_URL = `${BASE_URL}/api/venta`
+const LISTA_USUARIOS_URL = `${BASE_URL}/prueba/listar/persona`
+const BUSCAR_PRODUCTOS_URL = `${BASE_URL}/productos/buscar`
 
-async function detectEndpoint(base, paths) {
-  for (const p of paths) {
-    const url = `${base}${p}`
-    try {
-      await fetch(url, { method: "GET", mode: "no-cors" })
-      return url
-    } catch {}
+function decodeJwt(token) {
+  try {
+    const base = token.split(".")[1]
+    const json = atob(base.replace(/-/g, "+").replace(/_/g, "/"))
+    return JSON.parse(json)
+  } catch {
+    return null
   }
-  return `${base}${paths[0]}`
 }
 
-function currency(n) {
-  const num = Number(n ?? 0)
-  if (Number.isNaN(num)) return "-"
-  return num.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })
+async function detectVentasListUrl() {
+  const candidates = [
+    `${VENTA_URL}`,
+    `${VENTA_URL}/all`,
+    `${VENTA_URL}/listar`,
+  ]
+  for (const url of candidates) {
+    try {
+      const r = await fetch(url, { method: "GET" })
+      if (r.ok) {
+        const txt = await r.text()
+        if (txt.trim().startsWith("[")) return url
+      }
+    } catch {}
+  }
+  return `${VENTA_URL}`
+}
+
+function normalizeVenta(v) {
+  const id =
+    v.id ?? v.idVenta ?? v.ventaId ?? v.remisionId ?? v.codigo ?? v.codigoVenta ?? "—"
+
+  const fechaRaw =
+    v.fecha ?? v.fechaVenta ?? v.fechaCreacion ?? v.createdAt ?? v.fecCreacion
+  const fecha = fechaRaw ? new Date(fechaRaw).toLocaleString() : "—"
+
+  const cliente =
+    v.clienteNombre ??
+    v.cliente ??
+    v?.cliente?.nombre ??
+    v?.cliente?.razonSocial ??
+    "—"
+
+  const usuario =
+    v.usuarioNombre ??
+    v.usuario ??
+    v?.usuario?.nombre ??
+    v?.usuario?.username ??
+    (v.userId ? `ID ${v.userId}` : "—")
+
+  let total = v.total ?? 0
+  if (total == null) {
+    const items = v.items ?? v.detalles ?? []
+    total = Array.isArray(items)
+      ? items.reduce((acc, it) => {
+          const pu =
+            it.precioUnitario ?? it.valorUnitario ?? it.precio ?? it.valor ?? 0
+          const cant = it.cantidad ?? 0
+          return acc + Number(pu) * Number(cant)
+        }, 0)
+      : 0
+  }
+
+  return { id, fecha, cliente, usuario, total: Number(total || 0) }
 }
 
 export default function Remision() {
-  const [ventaUrl, setVentaUrl] = useState(null)
-  const [usuariosUrl, setUsuariosUrl] = useState(null)
-
   const [usuarios, setUsuarios] = useState([])
-  const [userId, setUserId] = useState("")
+  const [usuarioId, setUsuarioId] = useState("")
 
   const [clienteNombre, setClienteNombre] = useState("")
-  const [clienteCedula, setClienteCedula] = useState("")
+  const [clienteDocumento, setClienteDocumento] = useState("")
+  const [clienteEmail, setClienteEmail] = useState("")
 
   const [query, setQuery] = useState("")
   const [sugerencias, setSugerencias] = useState([])
   const [openSug, setOpenSug] = useState(false)
   const [loadingSug, setLoadingSug] = useState(false)
   const abortRef = useRef(null)
-  const boxRef = useRef(null)
 
-  const [items, setItems] = useState([]) // {idProducto, nombre, precioUnitario, cantidad}
+  const [items, setItems] = useState([])
+  const total = useMemo(
+    () =>
+      items.reduce(
+        (acc, it) => acc + Number(it.cantidad || 0) * Number(it.precioUnitario || 0),
+        0
+      ),
+    [items]
+  )
 
   const [saving, setSaving] = useState(false)
-  const [errorMsg, setErrorMsg] = useState("")
   const [okMsg, setOkMsg] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
 
-  // init
+  const [ventasUrlList, setVentasUrlList] = useState(`${VENTA_URL}`)
+  const [ventas, setVentas] = useState([])
+  const [loadingVentas, setLoadingVentas] = useState(false)
+  const [ventasErr, setVentasErr] = useState("")
+
+  const [filtroCliente, setFiltroCliente] = useState("")
+  const ventasFiltradas = useMemo(() => {
+    if (!filtroCliente.trim()) return ventas
+    const texto = filtroCliente.toLowerCase()
+    return ventas.filter(v => (v.cliente || "").toLowerCase().includes(texto))
+  }, [filtroCliente, ventas])
+
   useEffect(() => {
     (async () => {
-      const venta = await detectEndpoint(BASE_URL, VENTA_ENDPOINTS)
-      const users = await detectEndpoint(BASE_URL, USUARIOS_ENDPOINTS)
-      setVentaUrl(venta)
-      setUsuariosUrl(users)
-
       try {
-        const r = await fetch(users.replace(/\/+$/, ""))
-        if (r.ok) {
-          const data = await r.json()
-          setUsuarios(Array.isArray(data) ? data : [])
-          if (Array.isArray(data) && data.length) {
-            setUserId(data[0]?.id ?? data[0]?.idPersona ?? "")
-          }
+        const res = await fetch(LISTA_USUARIOS_URL)
+        if (!res.ok) throw new Error()
+        const data = await res.json()
+        const normalizados = (Array.isArray(data) ? data : [])
+          .map((p) => {
+            const id = p.id ?? p.perId ?? p.idPersona ?? p.personaId ?? p.userId ?? p.idUsuario
+            const nombre =
+              [p.perNombre, p.perApellido].filter(Boolean).join(" ") ||
+              p.username || p.nombre || p.email || (id ? `Usuario ${id}` : "")
+            return id ? { id, nombre } : null
+          })
+          .filter(Boolean)
+        setUsuarios(normalizados)
+        if (!usuarioId && normalizados.length > 0) {
+          setUsuarioId(String(normalizados[0].id))
         }
-      } catch {}
+      } catch {
+        setUsuarios([])
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      setLoadingVentas(true)
+      setVentasErr("")
+      try {
+        const url = await detectVentasListUrl()
+        setVentasUrlList(url)
+        const r = await fetch(url)
+        if (!r.ok) throw new Error("No se pudo listar las remisiones")
+        const data = await r.json()
+        const normal = (Array.isArray(data) ? data : []).map(normalizeVenta)
+        normal.sort((a, b) => Number(b.id || 0) - Number(a.id || 0))
+        setVentas(normal)
+      } catch (e) {
+        setVentasErr(e.message || "Error listando remisiones")
+      } finally {
+        setLoadingVentas(false)
+      }
     })()
   }, [])
 
-  // cerrar sugerencias al hacer clic afuera
-  useEffect(() => {
-    function onDocClick(e) {
-      if (boxRef.current && !boxRef.current.contains(e.target)) setOpenSug(false)
-    }
-    document.addEventListener("mousedown", onDocClick)
-    return () => document.removeEventListener("mousedown", onDocClick)
-  }, [])
-
-  // autocomplete con debounce
   useEffect(() => {
     if (!query || query.trim().length < 2) {
       setSugerencias([])
+      setOpenSug(false)
       return
     }
     setLoadingSug(true)
-    setErrorMsg("")
-    setOkMsg("")
     if (abortRef.current) abortRef.current.abort()
     const ctrl = new AbortController()
     abortRef.current = ctrl
 
     const t = setTimeout(async () => {
       try {
-        const url = `${BASE_URL}/productos/buscar?nombre=${encodeURIComponent(query.trim())}`
-        const r = await fetch(url, { signal: ctrl.signal })
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        const data = await r.json()
+        const url = `${BUSCAR_PRODUCTOS_URL}?q=${encodeURIComponent(query.trim())}`
+        const res = await fetch(url, { signal: ctrl.signal })
+        if (!res.ok) throw new Error("No se pudo buscar productos")
+        const data = await res.json()
         setSugerencias(Array.isArray(data) ? data : [])
         setOpenSug(true)
-      } catch (err) {
-        if (err.name !== "AbortError") setSugerencias([])
+      } catch {
+        setSugerencias([])
+        setOpenSug(false)
       } finally {
         setLoadingSug(false)
       }
-    }, 280)
+    }, 250)
 
     return () => clearTimeout(t)
   }, [query])
 
   function addItemFromSuggestion(s) {
-    const exists = items.find((it) => it.idProducto === s.id)
-    if (exists) {
-      setOpenSug(false)
-      setQuery("")
-      return
+    const existe = items.find((it) => it.idProducto === s.id)
+    if (existe) {
+      setItems((prev) =>
+        prev.map((it) =>
+          it.idProducto === s.id ? { ...it, cantidad: Number(it.cantidad) + 1 } : it
+        )
+      )
+    } else {
+      setItems((prev) => [
+        ...prev,
+        {
+          idProducto: s.id,
+          nombre: s.nombre,
+          precioUnitario: Number(s.valorUnitario ?? 0),
+          cantidad: 1,
+        },
+      ])
     }
-    const nuevo = {
-      idProducto: s.id,
-      nombre: s.nombre,
-      precioUnitario: Number(s.precioSalida ?? 0),
-      cantidad: 1,
-    }
-    setItems((prev) => [...prev, nuevo])
-    setOpenSug(false)
     setQuery("")
+    setOpenSug(false)
   }
 
-  function updateCantidad(index, cantidad) {
-    let c = parseInt(cantidad, 10)
+  function updateCantidad(idx, valor) {
+    let c = parseInt(valor, 10)
     if (!Number.isFinite(c) || c < 1) c = 1
-    setItems((prev) => prev.map((it, i) => (i === index ? { ...it, cantidad: c } : it)))
+    setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, cantidad: c } : it)))
   }
 
-  function removeItem(index) {
-    setItems((prev) => prev.filter((_, i) => i !== index))
+  function removeItem(idx) {
+    setItems((prev) => prev.filter((_, i) => i !== idx))
   }
 
-  const total = useMemo(
-    () => items.reduce((acc, it) => acc + Number(it.precioUnitario ?? 0) * Number(it.cantidad ?? 0), 0),
-    [items]
-  )
-
-  // --------- Validación de guardado ---------
   const isValid =
-    clienteNombre.trim().length > 0 &&
-    clienteCedula.trim().length > 0 &&
-    String(userId).trim().length > 0 &&
+    String(usuarioId).trim() &&
+    clienteNombre.trim() &&
+    clienteDocumento.trim() &&
     items.length > 0 &&
     items.every((it) => Number(it.cantidad) >= 1)
 
   async function guardarRemision() {
-    setSaving(true)
-    setErrorMsg("")
-    setOkMsg("")
     try {
-      if (!isValid) {
-        throw new Error(
-          "Completa todos los campos obligatorios: Nombre, Cédula, Cliente del catálogo y al menos un producto con cantidad."
-        )
-      }
-      if (!ventaUrl) throw new Error("No se detectó el endpoint de ventas.")
+      setSaving(true)
+      setOkMsg("")
+      setErrorMsg("")
 
       const payload = {
-        userId: Number(userId),
+        userId: Number(usuarioId),
+        clienteNombre: clienteNombre.trim(),
+        clienteDocumento: clienteDocumento.trim(),
+        clienteEmail: clienteEmail?.trim() || null,
         items: items.map((it) => ({
           idProducto: it.idProducto,
-          cantidad: it.cantidad,
+          cantidad: Number(it.cantidad),
           precioUnitario: Number(it.precioUnitario),
         })),
       }
 
-      const r = await fetch(ventaUrl, {
+      const res = await fetch(VENTA_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-      if (!r.ok) {
-        const txt = await r.text().catch(() => "")
-        throw new Error(`Error al guardar (HTTP ${r.status}). ${txt || ""}`)
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "")
+        throw new Error(txt || "Error al guardar la remisión")
       }
-      const data = await r.json().catch(() => ({}))
-      setOkMsg(
-        `Remisión guardada. ID: ${data?.id ?? "—"} • Cliente: ${clienteNombre || "—"} • Cédula: ${
-          clienteCedula || "—"
-        }`
-      )
+
+      setOkMsg("Remisión guardada correctamente.")
       setItems([])
-    } catch (e) {
-      setErrorMsg(e.message || "Error inesperado al guardar.")
+      setQuery("")
+
+      const r = await fetch(ventasUrlList)
+      if (r.ok) {
+        const data = await r.json()
+        const normal = (Array.isArray(data) ? data : []).map(normalizeVenta)
+        normal.sort((a, b) => Number(b.id || 0) - Number(a.id || 0))
+        setVentas(normal)
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Error al guardar")
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <div className="contenedor-remision">
-      <header className="header-remision">
-        <h1 className="titulo-remision">Remisiones / Ventas</h1>
+    <div className="remision-pageeeee">
+      <header className="remision-headerrrr">
+        <h2>Crear Remisión</h2>
       </header>
 
-      {/* Datos del cliente */}
-      <section className="seccion-remision">
-        <div className="grid-dos">
-          <div className="fila">
-            <label className="label">Nombre del cliente</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Nombres y apellidos"
-              value={clienteNombre}
-              onChange={(e) => setClienteNombre(e.target.value)}
-            />
-          </div>
-          <div className="fila">
-            <label className="label">Cédula</label>
-            <input
-              className="input"
-              type="text"
-              placeholder="Número de documento"
-              value={clienteCedula}
-              onChange={(e) => setClienteCedula(e.target.value.replace(/[^\d.-]/g, ""))}
-            />
-          </div>
+      {/* Cliente */}
+      <section className="remision-clienterrrr">
+        <div className="rowwwww">
+          <label>Nombre del cliente</label>
+          <input
+            type="text"
+            value={clienteNombre}
+            onChange={(e) => setClienteNombre(e.target.value)}
+          />
         </div>
+        <div className="rowwwww">
+          <label>Documento</label>
+          <input
+            type="text"
+            value={clienteDocumento}
+            onChange={(e) => setClienteDocumento(e.target.value)}
+          />
+        </div>
+        <div className="rowwwww">
+          <label>Correo</label>
+          <input
+            type="email"
+            value={clienteEmail}
+            onChange={(e) => setClienteEmail(e.target.value)}
+          />
+        </div>
+      </section>
 
-        <div className="fila" style={{ marginTop: 10 }}>
-          <label className="label">Usuario / Cliente (catálogo)</label>
-          <select className="input" value={userId} onChange={(e) => setUserId(e.target.value)}>
-            <option value="">— Selecciona —</option>
+      {/* Usuario */}
+      <section className="remision-usuariorrrr">
+        <div className="rowwwww">
+          <label>Usuario que realiza la remisión</label>
+          <select value={usuarioId} onChange={(e) => setUsuarioId(e.target.value)}>
+            <option value="">Seleccione…</option>
             {usuarios.map((u) => (
-              <option key={u.id ?? u.idPersona} value={u.id ?? u.idPersona}>
-                {u.nombre ?? [u.perNombre, u.perApellido].filter(Boolean).join(" ")}
+              <option key={u.id} value={u.id}>
+                {u.nombre}
               </option>
             ))}
           </select>
         </div>
       </section>
 
-      {/* Autocomplete de productos */}
-      <section className="seccion-remision" ref={boxRef}>
-        <div className="fila">
-          <label className="label">Buscar producto por nombre</label>
+      {/* Buscar producto */}
+      <section className="remision-buscadorrrrr">
+        <label>Buscar producto</label>
+
+        <div className="sug-wrappppp">
           <input
-            className="input"
             type="text"
-            placeholder="Escribe al menos 2 letras…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => sugerencias.length && setOpenSug(true)}
+            placeholder="Escribe al menos 2 letras…"
+            onFocus={() => query.trim().length >= 2 && setOpenSug(true)}
+            onBlur={() => setTimeout(() => setOpenSug(false), 120)}
+          />
+
+          {openSug && sugerencias.length > 0 && (
+            <ul className="sug-listtttt">
+              {sugerencias.map((s) => (
+                <li
+                  key={s.id}
+                  onMouseDown={() => addItemFromSuggestion(s)}
+                  title={s.nombre}
+                >
+                  <span>{s.nombre}</span>
+                  <span>${s.valorUnitario?.toLocaleString?.() ?? 0}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      {/* Tabla de items */}
+      <section className="remision-tablaaaaa">
+        <table className="tablaaaaaa">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Producto</th>
+              <th>Precio unitario</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr><td colSpan="6">No hay productos.</td></tr>
+            ) : (
+              items.map((it, i) => (
+                <tr key={i}>
+                  <td>{it.idProducto}</td>
+                  <td>{it.nombre}</td>
+                  <td>${it.precioUnitario.toLocaleString()}</td>
+                  <td>
+                    <input
+                      type="number"
+                      value={it.cantidad}
+                      onChange={(e) => updateCantidad(i, e.target.value)}
+                    />
+                  </td>
+                  <td>${(it.precioUnitario * it.cantidad).toLocaleString()}</td>
+                  <td><button onClick={() => removeItem(i)}>✕</button></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+          <tfoot>
+            <tr><td colSpan="4">Total</td><td colSpan="2">${total.toLocaleString()}</td></tr>
+          </tfoot>
+        </table>
+      </section>
+
+      {/* Acciones */}
+      <section className="remision-actionsrrrr">
+        <button disabled={!isValid || saving} onClick={guardarRemision}>
+          {saving ? "Guardando…" : "Guardar remisión"}
+        </button>
+        {okMsg && <div className="alertrrrr okkkk">{okMsg}</div>}
+        {errorMsg && <div className="alertrrrr errorrrr">{errorMsg}</div>}
+      </section>
+
+      {/* Historial */}
+      <section className="remision-historialllll" style={{ marginTop: 30 }}>
+        <h3>Historial de remisiones</h3>
+
+        <div className="buscador-historialllll">
+          <input
+            type="text"
+            placeholder="Buscar por nombre del cliente..."
+            value={filtroCliente}
+            onChange={(e) => setFiltroCliente(e.target.value)}
           />
         </div>
 
-        {openSug && (
-          <div className="sugerencias">
-            {loadingSug && <div className="sug-item">Buscando…</div>}
-            {!loadingSug && !sugerencias.length && query.trim().length >= 2 && (
-              <div className="sug-item">Sin coincidencias</div>
-            )}
-            {!loadingSug &&
-              sugerencias.map((s) => (
-                <button
-                  type="button"
-                  key={s.id}
-                  className="sug-item"
-                  onClick={() => addItemFromSuggestion(s)}
-                >
-                  <div className="sug-nombre">{s.nombre}</div>
-                  <div className="sug-precio">{currency(s.precioSalida)}</div>
-                </button>
-              ))}
-          </div>
+        {loadingVentas ? (
+          <p>Cargando…</p>
+        ) : ventasErr ? (
+          <p className="alertrrrr errorrrr">{ventasErr}</p>
+        ) : (
+          <table className="tablaaaaaa">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Usuario</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ventasFiltradas.length === 0 ? (
+                <tr><td colSpan="5">No hay remisiones.</td></tr>
+              ) : (
+                ventasFiltradas.map((v) => (
+                  <tr key={v.id}>
+                    <td>{v.id}</td>
+                    <td>{v.fecha}</td>
+                    <td>{v.cliente}</td>
+                    <td>{v.usuario}</td>
+                    <td>${v.total.toLocaleString()}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         )}
-      </section>
-
-      {/* Items seleccionados */}
-      <section className="seccion-remision">
-        <div className="tabla">
-          <div className="row header">
-            <div>ID</div>
-            <div>Producto</div>
-            <div>Precio</div>
-            <div>Cantidad</div>
-            <div>Subtotal</div>
-            <div></div>
-          </div>
-
-          {items.map((it, idx) => (
-            <div className="row" key={it.idProducto}>
-              <div>{it.idProducto}</div>
-              <div>{it.nombre}</div>
-              <div>{currency(it.precioUnitario)}</div>
-              <div>
-                <input
-                  className="input cantidad"
-                  type="number"
-                  min={1}
-                  step="1"
-                  inputMode="numeric"
-                  value={it.cantidad}
-                  onChange={(e) => updateCantidad(idx, e.target.value)}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  onFocus={(e) => e.target.select()}
-                />
-              </div>
-              <div>{currency(Number(it.precioUnitario) * Number(it.cantidad))}</div>
-              <div>
-                <button className="btn btn-danger" type="button" onClick={() => removeItem(idx)}>
-                  Quitar
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {!items.length && (
-            <div className="row">
-              <div className="col-100">No has agregado productos todavía.</div>
-            </div>
-          )}
-        </div>
-
-        <div className="totales">
-          <div className="total-linea">
-            <span>Total:</span>
-            <strong>{currency(total)}</strong>
-          </div>
-        </div>
-
-        <div className="acciones">
-          <button
-            className="btn btn-primary"
-            disabled={saving || !isValid}
-            title={!isValid ? "Completa todos los campos para guardar" : ""}
-            onClick={guardarRemision}
-          >
-            {saving ? "Guardando…" : "Guardar remisión"}
-          </button>
-        </div>
-
-        {errorMsg && <div className="alert error">{errorMsg}</div>}
-        {okMsg && <div className="alert ok">{okMsg}</div>}
       </section>
     </div>
   )

@@ -67,23 +67,68 @@ const Login = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/api/login/prueba", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usernameOrEmail: correo, password })
-    })
-      .then(r => { if (!r.ok) throw new Error("Credenciales inválidas"); return r.text(); })
-      .then(async (token) => {
-        if (token) localStorage.setItem('authToken', token);
-        const role = await inferRole(token, correo);
-        const permisos = mapPermisos(role);
-        localStorage.setItem('rol', permisos.rol);
-        localStorage.setItem('permisos', JSON.stringify(permisos));
-        window.location.href = "http://localhost:3000/Panel";
-      })
-      .catch(err => alert(err.message));
+    try {
+      // 1) Validar credenciales contra el backend
+      const loginRes = await fetch("http://localhost:8080/api/login/prueba", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usernameOrEmail: correo, password })
+      });
+
+      const msg = await loginRes.text();
+      if (!loginRes.ok) {
+        // Si el back manda un mensaje de error, lo mostramos
+        throw new Error(msg || "Credenciales inválidas");
+      }
+
+      // Guardamos algo en authToken solo para que RequireRole vea que hay sesión
+      localStorage.setItem("authToken", msg || "OK");
+
+      // 2) Pedir lista de usuarios y encontrar el actual por correo/documento
+      const listRes = await fetch("http://localhost:8080/api/usuarios/listar");
+      if (!listRes.ok) {
+        throw new Error("No se pudo obtener la información del usuario.");
+      }
+      const usuarios = await listRes.json();
+
+      const normalize = (v) => (v ?? "").toString().trim().toLowerCase();
+      const ident = normalize(correo); // lo que el usuario escribió en el login
+
+      // Buscamos por email o por documento (cédula)
+      const usuario = usuarios.find((u) =>
+        normalize(u.email) === ident || normalize(u.documento) === ident
+      );
+
+      // Si por alguna razón no se encuentra, lo tratamos como empleado
+      const rol = usuario?.rol || "Empleado";
+
+      // 3) Datos del usuario para Remisión (nombre que saldrá en PDFs, etc.)
+      const displayName =
+        (usuario
+          ? [usuario.nombre, usuario.apellido].filter(Boolean).join(" ")
+          : "") ||
+        usuario?.email ||
+        "Usuario";
+
+      const sessionUser = {
+        id: Number(usuario?.personaId ?? usuario?.id ?? 0),
+        displayName,
+      };
+      localStorage.setItem("sessionUser", JSON.stringify(sessionUser));
+
+      // 4) Mapear rol → permisos y guardarlos en localStorage
+      const permisos = mapPermisos(rol);
+      localStorage.setItem("rol", permisos.rol);
+      localStorage.setItem("role", permisos.rol); // para compatibilidad
+      localStorage.setItem("permisos", JSON.stringify(permisos));
+
+      // 5) Ir al panel
+      window.location.href = "http://localhost:3000/Panel";
+    } catch (err) {
+      alert(err.message || "Error al iniciar sesión");
+    }
   };
 
   const location = useLocation();
@@ -113,6 +158,9 @@ const Login = () => {
   };
   const closeForgot = () => {
     setShowForgot(false);
+    setFpLoading(false);
+    setFpMsg(null);
+    setFpErr(null);
     if (hasToken) navigate('/login', { replace: true });
   };
 
@@ -170,7 +218,7 @@ const Login = () => {
         <div className='imagenr'><FaUserCircle /></div>
 
         <div className='login-registrorr'>
-          <h3>Usuario</h3>
+          <h3>Correo Electrónico</h3>
           <input type="text" required value={correo} onChange={(e) => setCorreo(e.target.value)} />
         </div>
         <div className='login-registrorr'>
@@ -183,7 +231,7 @@ const Login = () => {
         </div>
 
         <div className='botonr'>
-          <button type="submit">Login</button>
+          <button type="submit">Acceder</button>
         </div>
       </form>
 

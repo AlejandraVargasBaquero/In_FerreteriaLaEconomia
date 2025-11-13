@@ -1,19 +1,15 @@
-.layout-container {
+/* Contenedor general del layout */
+.layout-container{
   display: flex;
+}
+
+/* El contenido corre 84px a la derecha para no quedar debajo del sidebar */
+.layout-content{
+  width: 100%;
+  margin-left: 84px;      /* igual al width del sidebar */
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f0fe 100%);
-}
-
-.layout-content {
-  flex: 1;
-  margin-left: 80px;
-  padding: 20px;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@media (max-width: 768px) {
-  .layout-content {
-    margin-left: 0;
-    padding: 10px;
-  }
+  background: #f3f6fb;    /* fondo claro del área de trabajo */
+  position: relative;
+  z-index: 1;             /* por debajo del sidebar */
+  padding: 0;             /* tus páginas ya tienen paddings propios */
 }

@@ -6,22 +6,24 @@ import { Link } from "react-router-dom"
 import { FaUser, FaEnvelope, FaLock, FaIdCard, FaMapMarkerAlt, FaUserTag } from "react-icons/fa"
 import "./crear.css"
 
-const API_BASE = "" // proxy CRA
-const CREATE_URL = `${API_BASE}/prueba/guardar/usuario` // => "/prueba/guardar/usuario"
+// SIN PROXY: apunta al backend en :8080
+const API_BASE = "http://localhost:8080"
+const CREATE_URL = `${API_BASE}/prueba/guardar/usuario`
+
+const INIT = {
+  username: "",
+  email: "",
+  password: "",
+  perNombre: "",
+  perApellido: "",
+  perTipoDocumento: "CC",
+  perIdentidad: "",
+  perDireccion: "",
+  idRol: "", // 1=Admin, 2=Empleado (ajústalo a tus IDs reales)
+}
 
 export default function CrearUsuario() {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    perNombre: "",
-    perApellido: "",
-    perTipoDocumento: "",
-    perIdentidad: "",
-    perDireccion: "",
-    idRol: "",
-  })
-
+  const [formData, setFormData] = useState(INIT)
   const [okMsg, setOkMsg] = useState("")
   const [errMsg, setErrMsg] = useState("")
 
@@ -34,33 +36,53 @@ export default function CrearUsuario() {
   }
 
   const handleReset = () => {
-    setFormData({
-      username: "",
-      email: "",
-      password: "",
-      perNombre: "",
-      perApellido: "",
-      perTipoDocumento: "",
-      perIdentidad: "",
-      perDireccion: "",
-      idRol: "",
-    })
+    setFormData(INIT)
     clearMessages()
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     clearMessages()
+
+    // Validaciones rápidas
+    if (!formData.username.trim()) return setErrMsg("El username es obligatorio.")
+    if (!formData.email.trim()) return setErrMsg("El email es obligatorio.")
+    if (!formData.password.trim()) return setErrMsg("La contraseña es obligatoria.")
+    if (!formData.perNombre.trim()) return setErrMsg("El nombre es obligatorio.")
+    if (!formData.perApellido.trim()) return setErrMsg("El apellido es obligatorio.")
+    if (!formData.perIdentidad.trim()) return setErrMsg("El número de documento es obligatorio.")
+    if (!["CC","TI","CE","PAS"].includes(formData.perTipoDocumento))
+      return setErrMsg("Tipo de documento inválido (usa CC, TI, CE o PAS).")
+    if (!formData.idRol) return setErrMsg("Selecciona un rol.")
+
+    // Prepara payload (idRol como número)
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      perNombre: formData.perNombre,
+      perApellido: formData.perApellido,
+      perTipoDocumento: formData.perTipoDocumento,
+      perIdentidad: formData.perIdentidad,
+      perDireccion: formData.perDireccion,
+      idRol: Number(formData.idRol),
+    }
+
     try {
       const response = await fetch(CREATE_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        mode: "cors",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       })
+
       if (!response.ok) {
+        if (response.status === 409) return setErrMsg("El username o el email ya existen.")
+        if (response.status === 400) return setErrMsg("Datos inválidos. Revisa los campos.")
         const txt = await response.text().catch(() => "")
-        throw new Error(`No se pudo guardar. ${txt || ""}`)
+        throw new Error(`HTTP ${response.status} ${txt}`)
       }
+
       setOkMsg("✅ Usuario guardado correctamente.")
       handleReset()
     } catch (error) {
@@ -77,7 +99,7 @@ export default function CrearUsuario() {
           <p className="crear-subtitle" style={{marginTop:0}}>Registra usuarios</p>
         </div>
 
-        {/* volver a la lista dentro de tu Layout */}
+        {/* Volver a la lista */}
         <Link to="/crear.usuario" className="btn-limpiar" style={{ textDecoration: "none" }}>
           Volver a la lista
         </Link>
@@ -115,7 +137,12 @@ export default function CrearUsuario() {
 
           <div className="form-field">
             <label><FaIdCard /> Tipo de Documento</label>
-            <input type="text" name="perTipoDocumento" value={formData.perTipoDocumento} onChange={handleChange} placeholder="CC, TI, CE..." required />
+            <select name="perTipoDocumento" value={formData.perTipoDocumento} onChange={handleChange} required>
+              <option value="CC">Cédula de ciudadanía (CC)</option>
+              <option value="TI">Tarjeta de identidad (TI)</option>
+              <option value="CE">Cédula de extranjería (CE)</option>
+              <option value="PAS">Pasaporte (PAS)</option>
+            </select>
           </div>
 
           <div className="form-field">
@@ -132,7 +159,7 @@ export default function CrearUsuario() {
             <label><FaUserTag /> Rol</label>
             <select name="idRol" value={formData.idRol} onChange={handleChange} required>
               <option value="">Seleccionar rol</option>
-              <option value="1">Administrativo</option>
+              <option value="1">Administrador</option>
               <option value="2">Empleado</option>
             </select>
           </div>
