@@ -119,8 +119,6 @@ export default function In_Productos() {
               <th>Precio Entrada</th>
               <th>Precio Salida</th>
               <th>Descuento (%)</th>
-              {/* 🔒 Solo admins verían acciones si existieran */}
-              {esAdmin && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -134,17 +132,6 @@ export default function In_Productos() {
                 <td>${p.proPrecioEntrada}</td>
                 <td>${p.proPrecioSalida}</td>
                 <td className="descuento">{p.proDescuento}%</td>
-                {/* 🔒 Solo admin vería botones extra */}
-                {esAdmin && (
-                  <td style={{ textAlign: "center" }}>
-                    <button
-                      className="btn-tabla-editar"
-                      onClick={() => navigate(`/modificar_productos?id=${p.idProducto}`)}
-                    >
-                      ✎
-                    </button>
-                  </td>
-                )}
               </tr>
             ))}
 
