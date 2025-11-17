@@ -99,9 +99,7 @@ export default function In_Productos() {
             onChange={(e) => setBusquedaCategoria(e.target.value)}
           >
             {categoriasUnicas.map((cat, index) => (
-              <option key={index} value={cat}>
-                {cat}
-              </option>
+              <option key={index} value={cat}>{cat}</option>
             ))}
           </select>
         </div>
@@ -114,30 +112,27 @@ export default function In_Productos() {
               <th>ID</th>
               <th>Nombre del Producto</th>
               <th>Categoría</th>
-              <th>Unidad</th>
               <th>Cantidad</th>
               <th>Precio Entrada</th>
               <th>Precio Salida</th>
-              <th>Descuento (%)</th>
             </tr>
           </thead>
+
           <tbody>
             {productosFiltrados.map((p, index) => (
               <tr key={p.idProducto ?? index}>
                 <td>{p.idProducto}</td>
                 <td className="producto-nombre">{p.nombreProducto}</td>
                 <td>{p.proCategoria}</td>
-                <td>{p.proUnidad}</td>
                 <td className="cantidad">{p.proCantidad}</td>
                 <td>${p.proPrecioEntrada}</td>
                 <td>${p.proPrecioSalida}</td>
-                <td className="descuento">{p.proDescuento}%</td>
               </tr>
             ))}
 
             {!productosFiltrados.length && (
               <tr>
-                <td colSpan={esAdmin ? 9 : 8} style={{ textAlign: "center", padding: "14px" }}>
+                <td colSpan={6} style={{ textAlign: "center", padding: "14px" }}>
                   No hay productos con ese filtro.
                 </td>
               </tr>

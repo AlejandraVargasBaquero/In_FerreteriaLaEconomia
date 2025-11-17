@@ -118,6 +118,7 @@ export default function Remision() {
     return ventas.filter(v => (v.cliente || "").toLowerCase().includes(texto))
   }, [filtroCliente, ventas])
 
+  // === Cargar usuarios ===
   useEffect(() => {
     (async () => {
       try {
@@ -144,6 +145,7 @@ export default function Remision() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // === Cargar historial de remisiones ===
   useEffect(() => {
     ;(async () => {
       setLoadingVentas(true)
@@ -165,6 +167,7 @@ export default function Remision() {
     })()
   }, [])
 
+  // === Autocomplete de productos ===
   useEffect(() => {
     if (!query || query.trim().length < 2) {
       setSugerencias([])
@@ -235,6 +238,7 @@ export default function Remision() {
     items.length > 0 &&
     items.every((it) => Number(it.cantidad) >= 1)
 
+  // === Guardar remisión ===
   async function guardarRemision() {
     try {
       setSaving(true)
@@ -258,9 +262,108 @@ export default function Remision() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
+
       if (!res.ok) {
-        const txt = await res.text().catch(() => "")
-        throw new Error(txt || "Error al guardar la remisión")
+        let friendly = "Error al guardar la remisión"
+        let rawBody = ""
+
+        try {
+          rawBody = await res.text()
+        } catch {
+          rawBody = ""
+        }
+
+        const hasStockError = /stock insuficiente/i.test(rawBody)
+
+        if (hasStockError) {
+          // 🔍 Vamos a revisar stock de TODOS los productos
+          try {
+            let productos = []
+            const candidates = [
+              `${BASE_URL}/productos/obtener`,
+              `${BASE_URL}/productos/listar`,
+            ]
+            for (const url of candidates) {
+              try {
+                const rProd = await fetch(url)
+                if (!rProd.ok) continue
+                const dataProd = await rProd.json()
+                if (Array.isArray(dataProd)) {
+                  productos = dataProd
+                  break
+                }
+                if (Array.isArray(dataProd?.productos)) {
+                  productos = dataProd.productos
+                  break
+                }
+              } catch {}
+            }
+
+            if (Array.isArray(productos) && productos.length) {
+              const faltantes = []
+
+              items.forEach((it) => {
+                const p = productos.find(
+                  (prod) =>
+                    prod.idProducto === it.idProducto ||
+                    prod.id === it.idProducto ||
+                    prod.codigo === it.idProducto
+                )
+
+                const stock = Number(
+                  p?.proCantidad ??
+                  p?.stock ??
+                  p?.cantidad ??
+                  0
+                )
+                const cantSolicitada = Number(it.cantidad) || 0
+
+                if (p && cantSolicitada > stock) {
+                  const nombre =
+                    p.nombreProducto ??
+                    p.nomProducto ??
+                    it.nombre ??
+                    `ID ${it.idProducto}`
+
+                  faltantes.push({
+                    nombre,
+                    solicitada: cantSolicitada,
+                    stock,
+                  })
+                }
+              })
+
+              if (faltantes.length === 1) {
+                const f = faltantes[0]
+                friendly = `El producto "${f.nombre}" no tiene stock suficiente (solicitado: ${f.solicitada}, disponible: ${f.stock}).`
+              } else if (faltantes.length > 1) {
+                const detalle = faltantes
+                  .map(
+                    (f) =>
+                      `"${f.nombre}" (solicitado: ${f.solicitada}, disponible: ${f.stock})`
+                  )
+                  .join(", ")
+                friendly = `Los siguientes productos no tienen stock suficiente: ${detalle}.`
+              } else {
+                friendly = "Uno o más productos no tienen stock suficiente."
+              }
+            } else {
+              friendly = "Uno o más productos no tienen stock suficiente."
+            }
+          } catch {
+            friendly = "Uno o más productos no tienen stock suficiente."
+          }
+        } else if (rawBody) {
+          // otro tipo de error: limpiamos el mensaje
+          try {
+            const json = JSON.parse(rawBody)
+            friendly = json.message || json.error || rawBody
+          } catch {
+            friendly = rawBody
+          }
+        }
+
+        throw new Error(friendly)
       }
 
       setOkMsg("Remisión guardada correctamente.")
@@ -418,7 +521,7 @@ export default function Remision() {
         <div className="buscador-historialllll">
           <input
             type="text"
-            placeholder="Buscar por nombre del cliente..."
+            placeholder="Buscar por nombre del cliente"
             value={filtroCliente}
             onChange={(e) => setFiltroCliente(e.target.value)}
           />

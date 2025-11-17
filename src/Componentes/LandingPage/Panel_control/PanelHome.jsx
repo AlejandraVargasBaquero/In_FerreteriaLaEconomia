@@ -37,9 +37,6 @@ function PanelHome() {
 
   return (
     <div className="panel-home-hero">
-      <div className="rotating-logo" aria-hidden="true">
-        <div className="hardware-icon"><FaTools /></div>
-      </div>
 
       <div className="welcome-card">
         <h1 className="hero-title">

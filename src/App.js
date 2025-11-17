@@ -28,9 +28,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Rutas SIN sidebar */}
-        <Route path="/" element={<LandingPage />} />
+        {/* 👉 Que la raíz / redirija al login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* Login */}
         <Route path="/login" element={<Login />} />
+
+        {/* Si quieres seguir usando la LandingPage, puedes entrar por /landing */}
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* ✅ TODO lo que debe verse con el sidebar va DENTRO de Layout */}
         <Route element={<Layout />}>

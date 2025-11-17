@@ -17,11 +17,32 @@ const RegistrarProveedor = () => {
   const [mensaje, setMensaje] = useState("");
 
   const handleChange = (e) => {
-    setProveedor({ ...proveedor, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+
+    // 🔥 Validación: solo números en teléfono
+    if (name === "telefono") {
+      value = value.replace(/\D/g, ""); // elimina letras y símbolos
+    }
+
+    setProveedor({ ...proveedor, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 🔥 Validación: teléfono debe ser 10 dígitos
+    if (!/^\d{10}$/.test(proveedor.telefono)) {
+      setMensaje("❌ El teléfono debe tener exactamente 10 dígitos numéricos");
+      setTimeout(() => setMensaje(""), 3000);
+      return;
+    }
+
+    // 🔥 Validación: valorCompra >= 1
+    if (Number(proveedor.valorCompra) < 1) {
+      setMensaje("❌ El valor de compra debe ser mayor o igual a 1");
+      setTimeout(() => setMensaje(""), 3000);
+      return;
+    }
 
     try {
       const r = await fetch("http://localhost:8080/Proveedor/guardar", {
@@ -69,11 +90,12 @@ const RegistrarProveedor = () => {
         </div>
 
         <div className="grid">
+
           <div className="campo">
             <label>Nombre</label>
             <input
               name="nomProveedor"
-              placeholder="Ej. Acero & Cía"
+              placeholder="Nombre del proveedor"
               value={proveedor.nomProveedor}
               onChange={handleChange}
               required
@@ -84,7 +106,7 @@ const RegistrarProveedor = () => {
             <label>Dirección</label>
             <input
               name="direccionProveedor"
-              placeholder="Ej. Calle 10 #12-34"
+              placeholder="Dirección"
               value={proveedor.direccionProveedor}
               onChange={handleChange}
               required
@@ -96,7 +118,7 @@ const RegistrarProveedor = () => {
             <input
               name="correo"
               type="email"
-              placeholder="proveedor@correo.com"
+              placeholder="Correo electrónico"
               value={proveedor.correo}
               onChange={handleChange}
               required
@@ -107,9 +129,10 @@ const RegistrarProveedor = () => {
             <label>Teléfono</label>
             <input
               name="telefono"
-              placeholder="Ej. 3101234567"
+              placeholder="Teléfono"
               value={proveedor.telefono}
               onChange={handleChange}
+              maxLength={10}   // evita más de 10 dígitos
               required
             />
           </div>
@@ -119,13 +142,14 @@ const RegistrarProveedor = () => {
             <input
               name="valorCompra"
               type="number"
-              min="0"
-              placeholder="Ej. 150000"
+              min="1"   // 🔥 mayor o igual a 1
+              placeholder="Valor de compra"
               value={proveedor.valorCompra}
               onChange={handleChange}
               required
             />
           </div>
+
         </div>
 
         <div className="form-actions">
@@ -133,6 +157,7 @@ const RegistrarProveedor = () => {
             Guardar
           </button>
         </div>
+
       </form>
     </div>
   );

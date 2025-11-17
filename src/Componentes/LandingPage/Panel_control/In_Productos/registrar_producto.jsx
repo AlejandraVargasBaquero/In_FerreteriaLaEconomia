@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./registrar_productos.css";
-import "./In_Productos.css"; // Reutiliza header y botones
+import "./In_Productos.css";
 
 const RegistrarProducto = () => {
   const navigate = useNavigate();
@@ -9,14 +9,12 @@ const RegistrarProducto = () => {
   const [producto, setProducto] = useState({
     nombreProducto: "",
     proCategoria: "",
-    proUnidad: 0,
     proCantidad: 0,
     proPrecioEntrada: 0,
     proPrecioSalida: 0,
-    proDescuento: 0,
   });
 
-  const [mensaje, setMensaje] = useState(""); // ✅ mensaje de confirmación
+  const [mensaje, setMensaje] = useState("");
 
   const handleChange = (e) => {
     setProducto({ ...producto, [e.target.name]: e.target.value });
@@ -24,6 +22,16 @@ const RegistrarProducto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 🔥 Validaciones: mayores a 0
+    if (producto.proCantidad <= 0)
+      return setMensaje("❌ La cantidad debe ser mayor a 0");
+
+    if (producto.proPrecioEntrada <= 0)
+      return setMensaje("❌ El precio de entrada debe ser mayor a 0");
+
+    if (producto.proPrecioSalida <= 0)
+      return setMensaje("❌ El precio de salida debe ser mayor a 0");
 
     try {
       const res = await fetch("http://localhost:8080/productos/guardar", {
@@ -34,23 +42,21 @@ const RegistrarProducto = () => {
 
       if (res.ok) {
         setMensaje("✅ Producto guardado correctamente");
+
         setProducto({
           nombreProducto: "",
           proCategoria: "",
-          proUnidad: 0,
           proCantidad: 0,
           proPrecioEntrada: 0,
           proPrecioSalida: 0,
-          proDescuento: 0,
         });
 
-        // Oculta el mensaje después de 3 segundos
         setTimeout(() => setMensaje(""), 3000);
       } else {
         setMensaje("❌ Error al guardar el producto");
         setTimeout(() => setMensaje(""), 3000);
       }
-    } catch (error) {
+    } catch {
       setMensaje("⚠️ Error de conexión con el servidor");
       setTimeout(() => setMensaje(""), 3000);
     }
@@ -58,7 +64,6 @@ const RegistrarProducto = () => {
 
   return (
     <div className="registrar-wrap">
-      {/* Header fijo arriba */}
       <div className="header-section sticky">
         <h1 className="page-title">Registrar producto</h1>
         <div className="acciones-top">
@@ -71,10 +76,8 @@ const RegistrarProducto = () => {
         </div>
       </div>
 
-      {/* Mensaje de éxito o error */}
       {mensaje && <div className="alerta-mensaje">{mensaje}</div>}
 
-      {/* Formulario */}
       <form className="form-card grande" onSubmit={handleSubmit}>
         <div className="form-title">
           <h2>Datos del producto</h2>
@@ -86,7 +89,7 @@ const RegistrarProducto = () => {
             <label>Nombre del Producto</label>
             <input
               name="nombreProducto"
-              placeholder="Ej. Tornillo 3/16 x 6"
+              placeholder="Nombre del producto"
               value={producto.nombreProducto}
               onChange={handleChange}
               required
@@ -97,33 +100,22 @@ const RegistrarProducto = () => {
             <label>Categoría</label>
             <input
               name="proCategoria"
-              placeholder="Ej. Ferretería / Construcción"
+              placeholder="Categoría"
               value={producto.proCategoria}
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="campo">
-            <label>Unidad</label>
-            <input
-              name="proUnidad"
-              type="number"
-              min="0"
-              placeholder="Ej. 1"
-              value={producto.proUnidad}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          {/* UNIDAD ELIMINADA */}
 
           <div className="campo">
             <label>Cantidad</label>
             <input
               name="proCantidad"
               type="number"
-              min="0"
-              placeholder="Ej. 50"
+              min="1"                 // 🔥 Debe ser mayor a 0
+              placeholder="Cantidad"
               value={producto.proCantidad}
               onChange={handleChange}
               required
@@ -135,8 +127,8 @@ const RegistrarProducto = () => {
             <input
               name="proPrecioEntrada"
               type="number"
-              min="0"
-              placeholder="Ej. 2500"
+              min="1"                 // 🔥 Debe ser mayor a 0
+              placeholder="Precio de entrada"
               value={producto.proPrecioEntrada}
               onChange={handleChange}
               required
@@ -148,23 +140,9 @@ const RegistrarProducto = () => {
             <input
               name="proPrecioSalida"
               type="number"
-              min="0"
-              placeholder="Ej. 3500"
+              min="1"                 // 🔥 Debe ser mayor a 0
+              placeholder="Precio de salida"
               value={producto.proPrecioSalida}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="campo">
-            <label>Descuento (%)</label>
-            <input
-              name="proDescuento"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="Ej. 10"
-              value={producto.proDescuento}
               onChange={handleChange}
               required
             />

@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FaUser, FaEnvelope, FaLock, FaIdCard, FaMapMarkerAlt, FaUserTag } from "react-icons/fa"
 import "./crear.css"
 
@@ -26,6 +26,7 @@ export default function CrearUsuario() {
   const [formData, setFormData] = useState(INIT)
   const [okMsg, setOkMsg] = useState("")
   const [errMsg, setErrMsg] = useState("")
+  const navigate = useNavigate()
 
   const clearMessages = () => { setOkMsg(""); setErrMsg("") }
 
@@ -44,13 +45,14 @@ export default function CrearUsuario() {
     e.preventDefault()
     clearMessages()
 
-    // Validaciones rápidas
+    // ✅ Validaciones rápidas (TODOS los campos)
     if (!formData.username.trim()) return setErrMsg("El username es obligatorio.")
     if (!formData.email.trim()) return setErrMsg("El email es obligatorio.")
     if (!formData.password.trim()) return setErrMsg("La contraseña es obligatoria.")
     if (!formData.perNombre.trim()) return setErrMsg("El nombre es obligatorio.")
     if (!formData.perApellido.trim()) return setErrMsg("El apellido es obligatorio.")
     if (!formData.perIdentidad.trim()) return setErrMsg("El número de documento es obligatorio.")
+    if (!formData.perDireccion.trim()) return setErrMsg("La dirección es obligatoria.")
     if (!["CC","TI","CE","PAS"].includes(formData.perTipoDocumento))
       return setErrMsg("Tipo de documento inválido (usa CC, TI, CE o PAS).")
     if (!formData.idRol) return setErrMsg("Selecciona un rol.")
@@ -83,8 +85,17 @@ export default function CrearUsuario() {
         throw new Error(`HTTP ${response.status} ${txt}`)
       }
 
+      // ✅ Mensaje verde
       setOkMsg("✅ Usuario guardado correctamente.")
-      handleReset()
+
+      // ✅ Solo reseteo formulario, NO borro mensajes
+      setFormData(INIT)
+
+      // ✅ Redirigir a la lista de usuarios (tu ruta actual)
+      setTimeout(() => {
+        navigate("/crear.usuario")   // cambia aquí si tu ruta de lista es otra
+      }, 1500)
+
     } catch (error) {
       console.error("Error:", error)
       setErrMsg("❌ Error al guardar usuario. Revisa los datos o el servidor.")
@@ -112,32 +123,72 @@ export default function CrearUsuario() {
         <div className="form-grid">
           <div className="form-field">
             <label><FaUser /> Username</label>
-            <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Ingrese username" required />
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Ingrese username"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaEnvelope /> Email</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="email@ejemplo.com" required />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="email@ejemplo.com"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaLock /> Contraseña</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" required />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaUser /> Nombre</label>
-            <input type="text" name="perNombre" value={formData.perNombre} onChange={handleChange} placeholder="Nombre" required />
+            <input
+              type="text"
+              name="perNombre"
+              value={formData.perNombre}
+              onChange={handleChange}
+              placeholder="Nombre"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaUser /> Apellido</label>
-            <input type="text" name="perApellido" value={formData.perApellido} onChange={handleChange} placeholder="Apellido" required />
+            <input
+              type="text"
+              name="perApellido"
+              value={formData.perApellido}
+              onChange={handleChange}
+              placeholder="Apellido"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaIdCard /> Tipo de Documento</label>
-            <select name="perTipoDocumento" value={formData.perTipoDocumento} onChange={handleChange} required>
+            <select
+              name="perTipoDocumento"
+              value={formData.perTipoDocumento}
+              onChange={handleChange}
+              required
+            >
               <option value="CC">Cédula de ciudadanía (CC)</option>
               <option value="TI">Tarjeta de identidad (TI)</option>
               <option value="CE">Cédula de extranjería (CE)</option>
@@ -147,17 +198,36 @@ export default function CrearUsuario() {
 
           <div className="form-field">
             <label><FaIdCard /> Número de Documento</label>
-            <input type="text" name="perIdentidad" value={formData.perIdentidad} onChange={handleChange} placeholder="Número de documento" required />
+            <input
+              type="text"
+              name="perIdentidad"
+              value={formData.perIdentidad}
+              onChange={handleChange}
+              placeholder="Número de documento"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaMapMarkerAlt /> Dirección</label>
-            <input type="text" name="perDireccion" value={formData.perDireccion} onChange={handleChange} placeholder="Dirección completa" required />
+            <input
+              type="text"
+              name="perDireccion"
+              value={formData.perDireccion}
+              onChange={handleChange}
+              placeholder="Dirección completa"
+              required
+            />
           </div>
 
           <div className="form-field">
             <label><FaUserTag /> Rol</label>
-            <select name="idRol" value={formData.idRol} onChange={handleChange} required>
+            <select
+              name="idRol"
+              value={formData.idRol}
+              onChange={handleChange}
+              required
+            >
               <option value="">Seleccionar rol</option>
               <option value="1">Administrador</option>
               <option value="2">Empleado</option>
